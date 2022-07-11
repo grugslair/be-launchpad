@@ -1,0 +1,12 @@
+require('dotenv').config();
+const path = require('path');
+const env = process.env.NODE_ENV;
+const config = require('./dist/config/dbConfig.js');
+const { host, port, dialect, username, password, database } = config.default[env];
+
+module.exports = {
+  'url': `${dialect}://${username}:${password}:@${host}:${port}/${database}`,
+  'models-path': path.resolve('dist', 'database', 'models'),
+  'seeders-path': path.resolve('dist', 'database', 'seeds'),
+  'migrations-path': path.resolve('src', 'database', 'migrations')
+}
