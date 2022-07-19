@@ -1,12 +1,14 @@
 import express from "express";
 import { Router, Request, Response, NextFunction } from "express";
 import { AuthController } from "../modules/auth/Auth.controller";
+import { ProjectController } from "../modules/project/Project.controller";
 
 const userRouter: Router = express.Router();
 // Can define more router if needed
 
 // Controller initialization
-const AuthControllerObj = new AuthController();
+const authController = new AuthController();
+const projectController = new ProjectController();
 
 const wrap = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,7 +19,7 @@ const wrap = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-userRouter.get("/ping", wrap(AuthControllerObj.test))
+userRouter.get("/ping", wrap(authController.test))
 
 /* --- Authentication Route --- */
 /**
@@ -26,5 +28,9 @@ userRouter.get("/ping", wrap(AuthControllerObj.test))
  */
 // userRouter.post("/auth/login", wrap(AuthControllerObj.login))
 
+const projectRouter = express.Router();
 
-export { userRouter };
+projectRouter.get('/projects', wrap(projectController.getActiveProjects));
+
+
+export { userRouter, projectRouter };

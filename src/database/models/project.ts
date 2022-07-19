@@ -84,7 +84,6 @@ export class Project extends Model implements ProjectAttributes {
     }, {
       sequelize,
       tableName: 'projects',
-      paranoid: true,
       underscored: true,
     });
   }

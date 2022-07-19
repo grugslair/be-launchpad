@@ -7,6 +7,6 @@ const { host, port, dialect, username, password, database } = config.default[env
 module.exports = {
   'url': `${dialect}://${username}:${password}:@${host}:${port}/${database}`,
   'models-path': path.resolve('dist', 'database', 'models'),
-  'seeders-path': path.resolve('dist', 'database', 'seeds'),
+  'seeders-path': path.resolve('src', 'database', 'seeds'),
   'migrations-path': path.resolve('src', 'database', 'migrations')
 }
