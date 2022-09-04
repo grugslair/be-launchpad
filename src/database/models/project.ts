@@ -1,4 +1,5 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
+import { VestingRule } from './vestingRule';
 
 export interface ProjectAttributes {
   id: Number
@@ -84,12 +85,14 @@ export class Project extends Model implements ProjectAttributes {
     }, {
       sequelize,
       tableName: 'projects',
+      paranoid: true,
       underscored: true,
     });
   }
 
   static associateModel(): void {
     // set assoc here
+    Project.belongsTo(VestingRule, { foreignKey: 'vestingRuleId' });
   }
 }
 
