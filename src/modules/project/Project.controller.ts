@@ -31,7 +31,7 @@ class ProjectController {
       return res.status(422).json({ message: 'Invalid request', error });
     }
 
-    await DB.Registration.create(req.body);
+    await DB.Registration.findOrCreate(req.body);
 
     return res.send('Ok');
   }
