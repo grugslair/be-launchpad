@@ -33,7 +33,7 @@ export class VestingRule extends Model implements VestingRuleAttributes {
     }, {
       sequelize,
       tableName: 'vesting_rules',
-      paranoid: true,
+//      paranoid: true,
       underscored: true,
     });
   }

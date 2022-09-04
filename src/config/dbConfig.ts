@@ -13,6 +13,13 @@ const defaultDBconfig = {
   define: {
     underscored: true,
   },
+  ssl: true,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 };
 
 const DBconfig: Record<string, Options> = {
@@ -55,3 +62,5 @@ const DBconfig: Record<string, Options> = {
 };
 
 export default DBconfig;
+
+module.exports = DBconfig;

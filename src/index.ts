@@ -9,9 +9,19 @@ require("dotenv").config();
 
 const app: express.Application = express();
 
+const allowedOrigins = [
+    '*',
+];
+
+const corsOptions: cors.CorsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+  optionsSuccessStatus: 200 // For legacy browser support
+}
+
 app.use(morgan("combined"));
 app.use(bodyParser.json({ type: "application/json" }));
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use("/api", userRouter);
 app.use("/api", projectRouter);
