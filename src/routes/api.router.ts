@@ -31,6 +31,7 @@ userRouter.get("/ping", wrap(authController.test))
 const projectRouter = express.Router();
 
 projectRouter.get('/projects', wrap(projectController.getActiveProjects));
+projectRouter.get('/projects/:projectId', wrap(projectController.getProjectById));
 projectRouter.post('/projects/register', wrap(projectController.registerForProject));
 
 

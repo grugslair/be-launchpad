@@ -11,11 +11,13 @@ const SQL = new Sequelize(
 );
 
 // IMPORT MODELS
+import { Chain, ChainAttributes } from './chain';
+import { Currency, CurrencyAttributes } from './currency';
 import { Project, ProjectAttributes } from './project';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
 import { Registration } from './registration';
 
-const models = { Project, Registration, VestingRule };
+const models = { Chain, Currency, Project, Registration, VestingRule };
 
 Object.values(models).map((model) => model.initModel(SQL));
 
@@ -25,6 +27,8 @@ const DB = { Sequelize: SQL, ...models };
 
 export {
   DB,
+  ChainAttributes,
+  CurrencyAttributes,
   ProjectAttributes,
   VestingRuleAttributes
 };

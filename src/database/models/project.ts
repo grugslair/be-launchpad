@@ -1,4 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
+import { Chain } from './chain';
+import { Currency } from './currency';
 import { VestingRule } from './vestingRule';
 
 export interface ProjectAttributes {
@@ -10,6 +12,7 @@ export interface ProjectAttributes {
   tokenSymbol: String
   tokenDecimals: Number
   tokenInitialSupply: Number
+  tokenTotalSupply: Number
   description: String
   status: String
   banner: String
@@ -18,7 +21,8 @@ export interface ProjectAttributes {
   publicSaleTokenAmount: Number
   publicSaleTokenSold: Number
   publicSalePrice: Number
-  minInvestment: Number
+  publicSaleCurrencyId: String
+  minStaking: Number
   periodStart: Date
   periodEnd: Date
   discordUrl: String
@@ -36,6 +40,7 @@ export class Project extends Model implements ProjectAttributes {
   public tokenSymbol!: String;
   public tokenDecimals!: Number;
   public tokenInitialSupply!: Number;
+  public tokenTotalSupply!: Number;
   public description!: String;
   public status!: String;
   public banner!: String;
@@ -44,7 +49,8 @@ export class Project extends Model implements ProjectAttributes {
   public publicSaleTokenAmount!: Number;
   public publicSaleTokenSold!: Number;
   public publicSalePrice!: Number;
-  public minInvestment!: Number;
+  public publicSaleCurrencyId!: String;
+  public minStaking!: Number;
   public periodStart!: Date;
   public periodEnd!: Date;
   public discordUrl!: String;
@@ -75,7 +81,8 @@ export class Project extends Model implements ProjectAttributes {
       publicSaleTokenAmount: { type: DataTypes.FLOAT },
       publicSaleTokenSold: { type: DataTypes.FLOAT },
       publicSalePrice: { type: DataTypes.FLOAT },
-      minInvestment: { type: DataTypes.FLOAT },
+      publicSaleCurrencyId: { type: DataTypes.INTEGER },
+      minStaking: { type: DataTypes.FLOAT },
       periodStart: { type: DataTypes.DATE },
       periodEnd: { type: DataTypes.DATE },
       discordUrl: { type: DataTypes.STRING },
@@ -92,6 +99,8 @@ export class Project extends Model implements ProjectAttributes {
 
   static associateModel(): void {
     // set assoc here
+    Project.belongsTo(Chain, { foreignKey: 'chainId' });
+    Project.belongsTo(Currency, { foreignKey: 'publicSaleCurrencyId' });
     Project.belongsTo(VestingRule, { foreignKey: 'vestingRuleId' });
   }
 }
