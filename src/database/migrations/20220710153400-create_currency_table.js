@@ -12,7 +12,7 @@ module.exports = {
       },
       symbol: { type: Sequelize.STRING },
       contract_address: { type: Sequelize.STRING },
-      decimals: { type: Sequelize.STRING },
+      decimals: { type: Sequelize.INTEGER },
       name: { type: Sequelize.STRING },
       rate: { type: Sequelize.INTEGER },
       created_at: {
