@@ -27,6 +27,12 @@ class ProjectController {
       include: [
         {
           model: DB.VestingRule
+        },
+        {
+          model: DB.Currency
+        },
+        {
+          model: DB.Chain
         }
       ]
     });
