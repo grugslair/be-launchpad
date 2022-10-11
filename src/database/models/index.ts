@@ -16,8 +16,9 @@ import { Currency, CurrencyAttributes } from './currency';
 import { Project, ProjectAttributes } from './project';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
 import { Registration } from './registration';
+import { Report } from './report';
 
-const models = { Chain, Currency, Project, Registration, VestingRule };
+const models = { Chain, Currency, Project, Registration, Report, VestingRule };
 
 Object.values(models).map((model) => model.initModel(SQL));
 

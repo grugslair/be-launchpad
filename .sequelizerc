@@ -1,7 +1,5 @@
 require('dotenv').config();
 const path = require('path');
-const env = process.env.NODE_ENV;
-const config = require('./dist/config/dbConfig.js');
 
 module.exports = {
   'config': path.resolve('dist', 'config', 'dbConfig.js'),

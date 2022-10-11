@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { userRouter, projectRouter } from "./routes/api.router";
+import { userRouter, apiRouter } from "./routes/api.router";
 
 require("dotenv").config();
 
@@ -24,7 +24,7 @@ app.use(bodyParser.json({ type: "application/json" }));
 app.use(cors(corsOptions));
 
 app.use("/api", userRouter);
-app.use("/api", projectRouter);
+app.use("/api", apiRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const error: any = new Error("Not Found");
