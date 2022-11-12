@@ -23,6 +23,19 @@ class ProjectController {
   }
 
   public async getProjectById(req: Request, res: Response) {
+    let isRegistered = false;
+
+    if (req.query.walletAddress) {
+      const registration = await DB.Registration.findOne({
+        where: {
+          projectId: req.params.projectId,
+          walletAddress: req.query.walletAddress,
+        }
+      });
+
+      if (registration) isRegistered = true;
+    }
+
     const project = await DB.Project.findByPk(req.params.projectId, {
       include: [
         {
@@ -37,7 +50,7 @@ class ProjectController {
       ]
     });
 
-    return res.send(project);
+    return res.send({ isRegistered, project });
   }
 
   public async registerForProject(req: Request, res: Response) {

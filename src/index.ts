@@ -21,7 +21,7 @@ const corsOptions: cors.CorsOptions = {
 
 app.use(morgan("combined"));
 app.use(bodyParser.json({ type: "application/json" }));
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use("/api", userRouter);
 app.use("/api", apiRouter);

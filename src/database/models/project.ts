@@ -73,6 +73,7 @@ export class Project extends Model implements ProjectAttributes {
       tokenSymbol: { type: DataTypes.STRING },
       tokenDecimals: { type: DataTypes.INTEGER },
       tokenInitialSupply: { type: DataTypes.INTEGER },
+      tokenTotalSupply: { type: DataTypes.INTEGER }, 
       description: { type: DataTypes.TEXT },
       status: { type: DataTypes.STRING },
       banner: { type: DataTypes.STRING },
