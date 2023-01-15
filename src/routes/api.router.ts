@@ -39,5 +39,7 @@ apiRouter.post('/projects/register', wrap(projectController.registerForProject))
 
 apiRouter.get('/reports', wrap(reportController.getAllReports));
 
+apiRouter.post('/signature', wrap(projectController.generateSignature));
+
 
 export { userRouter, apiRouter };
