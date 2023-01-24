@@ -1,17 +1,17 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface RegistrationAttributes {
-  id: Number;
-  projectId: Number;
-  walletAddress: String;
-  amount: Number;
+  id: number;
+  projectId: number;
+  walletAddress: string;
+  amount: number;
 }
 
 export class Registration extends Model implements RegistrationAttributes {
-  public id!: Number;
-  public projectId!: Number;
-  public walletAddress!: String;
-  public amount!: Number;
+  public id!: number;
+  public projectId!: number;
+  public walletAddress!: string;
+  public amount!: number;
 
   static initModel(sequelize: Sequelize): void {
     Registration.init({

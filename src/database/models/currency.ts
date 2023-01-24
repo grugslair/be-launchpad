@@ -1,21 +1,21 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface CurrencyAttributes {
-  id: Number
-  symbol: String
-  contractAddress: String
-  name: String
-  decimals: Number
-  rate: Number
+  id: number
+  symbol: string
+  contractAddress: string
+  name: string
+  decimals: number
+  rate: number
 }
 
 export class Currency extends Model implements CurrencyAttributes {
-  public id!: Number;
-  public symbol!: String
-  public contractAddress!: String
-  public name!: String
-  public decimals!: Number
-  public rate!: Number
+  public id!: number;
+  public symbol!: string
+  public contractAddress!: string
+  public name!: string
+  public decimals!: number
+  public rate!: number
 
   static initModel(sequelize: Sequelize): void {
     Currency.init({

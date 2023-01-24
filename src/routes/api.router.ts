@@ -35,6 +35,7 @@ const apiRouter = express.Router();
 apiRouter.get('/projects', wrap(projectController.getActiveProjects));
 apiRouter.get('/projects/:projectId', wrap(projectController.getProjectById));
 apiRouter.post('/projects/register', wrap(projectController.registerForProject));
+apiRouter.post('/projects/signature', wrap(projectController.generateSignature));
 
 
 apiRouter.get('/reports', wrap(reportController.getAllReports));

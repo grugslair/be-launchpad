@@ -1,21 +1,21 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface VestingRuleAttributes {
-  id: Number
-  label: String
-  tgePercentage: Number
-  type: String
-  periodPercentage: Number
-  cliffPeriod: Number
+  id: number
+  label: string
+  tgePercentage: number
+  type: string
+  periodPercentage: number
+  cliffPeriod: number
 }
 
 export class VestingRule extends Model implements VestingRuleAttributes {
-  public id!: Number;
-  public label!: String
-  public tgePercentage!: Number
-  public type!: String
-  public periodPercentage!: Number
-  public cliffPeriod!: Number
+  public id!: number;
+  public label!: string
+  public tgePercentage!: number
+  public type!: string
+  public periodPercentage!: number
+  public cliffPeriod!: number
 
   static initModel(sequelize: Sequelize): void {
     VestingRule.init({

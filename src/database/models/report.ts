@@ -1,21 +1,21 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface ReportAttributes {
-  id: Number;
-  type: String;
-  title: String;
-  subtitle: String;
-  imageUrl: String;
-  pdfUrl: String;
+  id: number;
+  type: string;
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  pdfUrl: string;
 }
 
 export class Report extends Model implements ReportAttributes {
-  public id!: Number;
-  public type!: String;
-  public title!: String;
-  public subtitle!: String;
-  public imageUrl!: String;
-  public pdfUrl!: String;
+  public id!: number;
+  public type!: string;
+  public title!: string;
+  public subtitle!: string;
+  public imageUrl!: string;
+  public pdfUrl!: string;
 
   static initModel(sequelize: Sequelize): void {
     Report.init({

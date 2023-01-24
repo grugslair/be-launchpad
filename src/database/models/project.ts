@@ -4,59 +4,61 @@ import { Currency } from './currency';
 import { VestingRule } from './vestingRule';
 
 export interface ProjectAttributes {
-  id: Number
-  chainId: Number
-  vestingRuleId: Number
-  name: String
-  tokenContractAddress: String
-  tokenSymbol: String
-  tokenDecimals: Number
-  tokenInitialSupply: Number
-  tokenTotalSupply: Number
-  description: String
-  status: String
-  banner: String
-  logo: String
-  targetAmount: Number
-  publicSaleTokenAmount: Number
-  publicSaleTokenSold: Number
-  publicSalePrice: Number
-  publicSaleCurrencyId: String
-  minStaking: Number
+  id: number
+  chainId: number
+  vestingRuleId: number
+  name: string
+  tokenContractAddress: string
+  crowdSmartContract: string
+  tokenSymbol: string
+  tokenDecimals: number
+  tokenInitialSupply: number
+  tokenTotalSupply: number
+  description: string
+  status: string
+  banner: string
+  logo: string
+  targetAmount: number
+  publicSaleTokenAmount: number
+  publicSaleTokenSold: number
+  publicSalePrice: number
+  publicSaleCurrencyId: string
+  minStaking: number
   periodStart: Date
   periodEnd: Date
-  discordUrl: String
-  twitterUrl: String
-  mediumUrl: String
-  officialUrl: String
+  discordUrl: string
+  twitterUrl: string
+  mediumUrl: string
+  officialUrl: string
 }
 
 export class Project extends Model implements ProjectAttributes {
-  public id!: Number;
-  public chainId!: Number;
-  public vestingRuleId!: Number;
-  public name!: String;
-  public tokenContractAddress!: String;
-  public tokenSymbol!: String;
-  public tokenDecimals!: Number;
-  public tokenInitialSupply!: Number;
-  public tokenTotalSupply!: Number;
-  public description!: String;
-  public status!: String;
-  public banner!: String;
-  public logo!: String;
-  public targetAmount!: Number;
-  public publicSaleTokenAmount!: Number;
-  public publicSaleTokenSold!: Number;
-  public publicSalePrice!: Number;
-  public publicSaleCurrencyId!: String;
-  public minStaking!: Number;
+  public id!: number;
+  public chainId!: number;
+  public vestingRuleId!: number;
+  public name!: string;
+  public tokenContractAddress!: string;
+  public crowdSmartContract!: string;
+  public tokenSymbol!: string;
+  public tokenDecimals!: number;
+  public tokenInitialSupply!: number;
+  public tokenTotalSupply!: number;
+  public description!: string;
+  public status!: string;
+  public banner!: string;
+  public logo!: string;
+  public targetAmount!: number;
+  public publicSaleTokenAmount!: number;
+  public publicSaleTokenSold!: number;
+  public publicSalePrice!: number;
+  public publicSaleCurrencyId!: string;
+  public minStaking!: number;
   public periodStart!: Date;
   public periodEnd!: Date;
-  public discordUrl!: String;
-  public twitterUrl!: String;
-  public mediumUrl!: String;
-  public officialUrl!: String;
+  public discordUrl!: string;
+  public twitterUrl!: string;
+  public mediumUrl!: string;
+  public officialUrl!: string;
 
   static initModel(sequelize: Sequelize): void {
     Project.init({
@@ -70,6 +72,7 @@ export class Project extends Model implements ProjectAttributes {
       vestingRuleId: { type: DataTypes.INTEGER },
       name: { type: DataTypes.STRING },
       tokenContractAddress: { type: DataTypes.STRING },
+      crowdSmartContract: { type: DataTypes.STRING },
       tokenSymbol: { type: DataTypes.STRING },
       tokenDecimals: { type: DataTypes.INTEGER },
       tokenInitialSupply: { type: DataTypes.INTEGER },

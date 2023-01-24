@@ -1,21 +1,21 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface ChainAttributes {
-  id: Number
-  networkId: String
-  rpcUrl: String
-  name: String
-  logo: String
-  color: String
+  id: number
+  networkId: string
+  rpcUrl: string
+  name: string
+  logo: string
+  color: string
 }
 
 export class Chain extends Model implements ChainAttributes {
-  public id!: Number;
-  public networkId!: String
-  public rpcUrl!: String
-  public name!: String
-  public logo!: String
-  public color!: String
+  public id!: number;
+  public networkId!: string
+  public rpcUrl!: string
+  public name!: string
+  public logo!: string
+  public color!: string
 
   static initModel(sequelize: Sequelize): void {
     Chain.init({
