@@ -107,6 +107,35 @@ class ProjectController {
     console.log("Sample signature: ", signature.signature);
     return res.send({message: signature.signature})
   }
+
+  public async checkOnchainTxStatus(req: Request, res: Response) {
+    const txHash: string = req.body.tx_hash;
+    const chain: string = req.body.chain;
+    let web3 = new Web3('https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161');
+
+    if(chain === "GOERLI") {
+      web3 = new Web3('https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161');
+    } else if (chain === "BSC_TESTNET") {
+      web3 = new Web3('https://bsc-testnet.public.blastapi.io');
+    } else {
+      // TODO: need to add the mainnet one (ETHEREUM AND BSC_MAINNET)
+      // if chain not supported --> throw here
+    }
+
+    const txReceipt = await web3.eth.getTransactionReceipt(txHash);
+
+    // if(!txReceipt) {
+    //   // tx receipt null --> means that the tx hash has not been confirmed by miner
+    // }
+
+    // if(txReceipt.status) {
+    //   // if status == true --> means success
+    // } else if(!txReceipt.status) {
+    //   // if status == false --> means transaction failed
+    // }
+
+    return res.send(txReceipt);
+  }
 }
 
 export { ProjectController };
