@@ -23,9 +23,13 @@ export interface ProjectAttributes {
   publicSaleTokenSold: number
   publicSalePrice: number
   publicSaleCurrencyId: string
+  maxAllocation: number
   minStaking: number
-  periodStart: Date
-  periodEnd: Date
+  registrationPeriodStart: Date
+  registrationPeriodEnd: Date
+  buyingPeriodStart: Date
+  buyingPeriodEnd: Date
+  claimPeriodStart: Date
   discordUrl: string
   twitterUrl: string
   mediumUrl: string
@@ -53,8 +57,12 @@ export class Project extends Model implements ProjectAttributes {
   public publicSalePrice!: number;
   public publicSaleCurrencyId!: string;
   public minStaking!: number;
-  public periodStart!: Date;
-  public periodEnd!: Date;
+  public maxAllocation!: number;
+  public registrationPeriodStart!: Date;
+  public registrationPeriodEnd!: Date;
+  public buyingPeriodStart!: Date;
+  public buyingPeriodEnd!: Date;
+  public claimPeriodStart!: Date;
   public discordUrl!: string;
   public twitterUrl!: string;
   public mediumUrl!: string;

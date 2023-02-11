@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 import { DB } from "../../database/models";
 import Web3 from "web3";
 import Redis from "../../utils/redis";
+import { TRANSACTION_STATUS } from "../../utils/constants";
 const { env } = process;
 
 
@@ -58,6 +59,23 @@ class ProjectController {
     return res.send({ isRegistered, project });
   }
 
+  public async getInvestedAmount(req: Request, res: Response) {
+    const { walletAddress } = req.query;
+
+    const commits = await DB.Commit.findAll({
+      where: {
+        walletAddress,
+        status: TRANSACTION_STATUS.SUCCESS
+      }
+    });
+
+    if (!commits.length) return res.send({ amount: 0 })
+
+    const totalInvested = commits.reduce((a, b) => a += b.amount, 0);
+
+    return res.send({ amount: totalInvested });
+  }
+
   public async registerForProject(req: Request, res: Response) {
     const schema = Joi.object().keys({
       projectId: Joi.number().required(),
@@ -83,6 +101,32 @@ class ProjectController {
   
       await DB.Registration.create(req.body);
   
+      return res.send({ success: true, alreadyRegsiter: false });
+    } catch (e) {
+      console.log('Registration failed', e);
+      return res.send({ success: false, alreadyRegister: false });
+    }
+  }
+
+  public async investForProject(req: Request, res: Response) {
+    const schema = Joi.object().keys({
+      hash: Joi.string().required(),
+      timestamp: Joi.date().required(),
+      projectId: Joi.number().required(),
+      walletAddress: Joi.string().required(),
+      amount: Joi.number().required()
+    });
+    const validationResult = schema.validate(req.body);
+
+    if (validationResult.error) {
+      const error = isProd() ? {} : validationResult.error.details;
+
+      return res.status(422).json({ message: 'Invalid request', error });
+    }
+
+    try {
+      await DB.Commit.create(req.body);
+
       return res.send({ success: true, alreadyRegsiter: false });
     } catch (e) {
       console.log('Registration failed', e);
@@ -143,6 +187,7 @@ class ProjectController {
       return res.send({ message: null })
     }
   }
+
 }
 
 export { ProjectController };
