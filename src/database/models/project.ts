@@ -27,8 +27,8 @@ export interface ProjectAttributes {
   minStaking: number
   registrationPeriodStart: Date
   registrationPeriodEnd: Date
-  buyingPeriodStart: Date
-  buyingPeriodEnd: Date
+  buyPeriodStart: Date
+  buyPeriodEnd: Date
   claimPeriodStart: Date
   discordUrl: string
   twitterUrl: string
@@ -60,8 +60,8 @@ export class Project extends Model implements ProjectAttributes {
   public maxAllocation!: number;
   public registrationPeriodStart!: Date;
   public registrationPeriodEnd!: Date;
-  public buyingPeriodStart!: Date;
-  public buyingPeriodEnd!: Date;
+  public buyPeriodStart!: Date;
+  public buyPeriodEnd!: Date;
   public claimPeriodStart!: Date;
   public discordUrl!: string;
   public twitterUrl!: string;
@@ -98,8 +98,8 @@ export class Project extends Model implements ProjectAttributes {
       maxAllocation: { type: DataTypes.FLOAT },
       registrationPeriodStart: { type: DataTypes.DATE },
       registrationPeriodEnd: { type: DataTypes.DATE },
-      buyingPeriodStart: { type: DataTypes.DATE },
-      buyingPeriodEnd: { type: DataTypes.DATE },
+      buyPeriodStart: { type: DataTypes.DATE },
+      buyPeriodEnd: { type: DataTypes.DATE },
       claimPeriodStart: { type: DataTypes.DATE },
       discordUrl: { type: DataTypes.STRING },
       twitterUrl: { type: DataTypes.STRING },
