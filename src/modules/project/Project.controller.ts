@@ -63,7 +63,11 @@ class ProjectController {
           model: DB.VestingRule
         },
         {
-          model: DB.Currency
+          model: DB.Currency,
+          include: [{
+            model: DB.Chain,
+            through: { attributes: [] },
+          }]
         },
         {
           model: DB.Chain
