@@ -37,7 +37,6 @@ export class Commit extends Model implements CommitAttributes {
     }, {
       sequelize,
       tableName: 'commits',
-      paranoid: true,
       underscored: true,
     });
   }
