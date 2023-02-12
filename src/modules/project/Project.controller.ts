@@ -36,26 +36,7 @@ class ProjectController {
     const { params: { projectId }, query: { walletAddress } } = req;
     let isRegistered = false;
     let investedAmount = 0;
-
-    if (walletAddress) {
-      const registration = await DB.Registration.findOne({
-        where: { projectId, walletAddress }
-      });
-
-      if (registration) isRegistered = true;
-
-      const commits = await DB.Commit.findAll({
-        where: {
-          walletAddress,
-          projectId,
-          status: TRANSACTION_STATUS.SUCCESS
-        }
-      });
-
-      const totalInvested = commits.reduce((a, b) => a += b.amount, 0);
-
-      investedAmount = totalInvested;
-    }
+    let maxAllocation = 0;
 
     const project = await DB.Project.findByPk(req.params.projectId, {
       include: [
@@ -74,8 +55,32 @@ class ProjectController {
         }
       ]
     });
+    
+    if (walletAddress && project) {
+      const registration = await DB.Registration.findOne({
+        where: { projectId, walletAddress }
+      });
 
-    return res.send({ isRegistered, investedAmount, project });
+      if (registration) isRegistered = true;
+
+      const commits = await DB.Commit.findAll({
+        where: {
+          projectId,
+          status: TRANSACTION_STATUS.SUCCESS
+        }
+      });
+
+      const totalInvested = commits.reduce((a, b) => a += b.amount, 0);
+      const totalInvestedByUser = commits
+        .filter((a) => a.walletAddress === walletAddress)
+        .reduce((a, b) => a += b.amount, 0);
+
+      investedAmount = totalInvestedByUser;
+
+      maxAllocation = totalInvestedByUser / totalInvested * project.maxAllocation;
+    }
+
+    return res.send({ isRegistered, investedAmount, maxAllocation, project });
   }
 
   public async registerForProject(req: Request, res: Response) {
