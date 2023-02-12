@@ -14,16 +14,26 @@ const SQL = new Sequelize(
 import { Chain, ChainAttributes } from './chain';
 import { Commit, CommitAttributes } from './commit';
 import { Currency, CurrencyAttributes } from './currency';
+import { CurrencyToChain } from './currencyToChain';
 import { Project, ProjectAttributes } from './project';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
 import { Registration } from './registration';
 import { Report } from './report';
 
-const models = { Chain, Commit, Currency, Project, Registration, Report, VestingRule };
+const models = {
+  Chain,
+  Commit,
+  Currency,
+  CurrencyToChain,
+  Project,
+  Registration,
+  Report,
+  VestingRule,
+};
 
 Object.values(models).map((model) => model.initModel(SQL));
 
-Object.values(models).map((model) => model.associateModel());
+Object.values(models).map((model) => model.associateModel(SQL));
 
 const DB = { Sequelize: SQL, ...models };
 
