@@ -29,17 +29,28 @@ class ProjectController {
   }
 
   public async getProjectById(req: Request, res: Response) {
+    const { params: { projectId }, query: { walletAddress } } = req;
     let isRegistered = false;
+    let investedAmount = 0;
 
-    if (req.query.walletAddress) {
+    if (walletAddress) {
       const registration = await DB.Registration.findOne({
-        where: {
-          projectId: req.params.projectId,
-          walletAddress: req.query.walletAddress,
-        }
+        where: { projectId, walletAddress }
       });
 
       if (registration) isRegistered = true;
+
+      const commits = await DB.Commit.findAll({
+        where: {
+          walletAddress,
+          projectId,
+          status: TRANSACTION_STATUS.SUCCESS
+        }
+      });
+
+      const totalInvested = commits.reduce((a, b) => a += b.amount, 0);
+
+      investedAmount = totalInvested;
     }
 
     const project = await DB.Project.findByPk(req.params.projectId, {
@@ -56,24 +67,7 @@ class ProjectController {
       ]
     });
 
-    return res.send({ isRegistered, project });
-  }
-
-  public async getInvestedAmount(req: Request, res: Response) {
-    const { walletAddress } = req.query;
-
-    const commits = await DB.Commit.findAll({
-      where: {
-        walletAddress,
-        status: TRANSACTION_STATUS.SUCCESS
-      }
-    });
-
-    if (!commits.length) return res.send({ amount: 0 })
-
-    const totalInvested = commits.reduce((a, b) => a += b.amount, 0);
-
-    return res.send({ amount: totalInvested });
+    return res.send({ isRegistered, investedAmount, project });
   }
 
   public async registerForProject(req: Request, res: Response) {
