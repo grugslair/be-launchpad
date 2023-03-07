@@ -12,16 +12,16 @@ export interface ProjectAttributes {
   crowdSmartContract: string
   tokenSymbol: string
   tokenDecimals: number
-  tokenInitialSupply: number
-  tokenTotalSupply: number
+  tokenInitialSupply: string
+  tokenTotalSupply: string
   description: string
   status: string
   banner: string
   logo: string
   targetAmount: number
-  publicSaleTokenAmount: number
-  publicSaleTokenSold: number
-  publicSalePrice: number
+  publicSaleTokenAmount: string
+  publicSaleTokenSold: string
+  publicSalePrice: string
   publicSaleCurrencyId: string
   maxAllocation: number
   minStaking: number
@@ -45,16 +45,16 @@ export class Project extends Model implements ProjectAttributes {
   public crowdSmartContract!: string;
   public tokenSymbol!: string;
   public tokenDecimals!: number;
-  public tokenInitialSupply!: number;
-  public tokenTotalSupply!: number;
+  public tokenInitialSupply!: string;
+  public tokenTotalSupply!: string;
   public description!: string;
   public status!: string;
   public banner!: string;
   public logo!: string;
   public targetAmount!: number;
-  public publicSaleTokenAmount!: number;
-  public publicSaleTokenSold!: number;
-  public publicSalePrice!: number;
+  public publicSaleTokenAmount!: string;
+  public publicSaleTokenSold!: string;
+  public publicSalePrice!: string;
   public publicSaleCurrencyId!: string;
   public minStaking!: number;
   public maxAllocation!: number;
@@ -83,16 +83,16 @@ export class Project extends Model implements ProjectAttributes {
       crowdSmartContract: { type: DataTypes.STRING },
       tokenSymbol: { type: DataTypes.STRING },
       tokenDecimals: { type: DataTypes.INTEGER },
-      tokenInitialSupply: { type: DataTypes.INTEGER },
-      tokenTotalSupply: { type: DataTypes.INTEGER }, 
+      tokenInitialSupply: { type: DataTypes.STRING },
+      tokenTotalSupply: { type: DataTypes.STRING }, 
       description: { type: DataTypes.TEXT },
       status: { type: DataTypes.STRING },
       banner: { type: DataTypes.STRING },
       logo: { type: DataTypes.STRING },
-      targetAmount: { type: DataTypes.INTEGER },
-      publicSaleTokenAmount: { type: DataTypes.FLOAT },
-      publicSaleTokenSold: { type: DataTypes.FLOAT },
-      publicSalePrice: { type: DataTypes.FLOAT },
+      targetAmount: { type: DataTypes.STRING },
+      publicSaleTokenAmount: { type: DataTypes.STRING },
+      publicSaleTokenSold: { type: DataTypes.STRING },
+      publicSalePrice: { type: DataTypes.STRING },
       publicSaleCurrencyId: { type: DataTypes.INTEGER },
       minStaking: { type: DataTypes.FLOAT },
       maxAllocation: { type: DataTypes.FLOAT },

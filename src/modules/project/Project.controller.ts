@@ -1,14 +1,46 @@
+import { Promise as BluePromise } from "bluebird";
 import { Request, Response } from "express";
 import * as Joi from 'joi';
-import { DB } from "../../database/models";
 import Web3 from "web3";
-import Redis from "../../utils/redis";
+import moment from "moment";
+import { DB } from "../../database/models";
+import { RedisClient } from "../../utils/redis";
 import { TRANSACTION_STATUS } from "../../utils/constants";
 const { env } = process;
 
 
 const isProd = () => env.NODE_ENV === 'production';
+
+const SIGNATURE_REDIS_KEY = 'user:signature';
+
+interface CachedSignature {
+  convertedAmount: number
+  signature: string
+  salt: number
+  expiryAt: Date
+}
+
 class ProjectController {
+  constructor() {
+    this.getProjectById = this.getProjectById.bind(this);
+  }
+
+  async #getTotalLock(projectId: number) {
+    let totalLock = 0;
+
+    const scanResult = RedisClient.scanPattern(`${SIGNATURE_REDIS_KEY}:${projectId}`);
+    await BluePromise.mapSeries(scanResult, async (key) => {
+      const cachedSignature = await RedisClient.client.get(key);
+
+      if (cachedSignature) {
+        const cacheObj = JSON.parse(cachedSignature) as CachedSignature;
+        totalLock += cacheObj.convertedAmount;
+      }
+    });
+
+    return totalLock;
+  }
+
   public async getActiveProjects(req: Request, res: Response) {
     const projects = await DB.Project.findAll({
       where: { status: 'on_going' },
@@ -70,17 +102,23 @@ class ProjectController {
         }
       });
 
+      const totalLock = await this.#getTotalLock(Number(projectId));
       const totalInvested = commits.reduce((a, b) => a += b.amount, 0);
       const totalInvestedByUser = commits
         .filter((a) => a.walletAddress === walletAddress)
         .reduce((a, b) => a += b.amount, 0);
 
-      investedAmount = totalInvestedByUser;
+      investedAmount = totalInvestedByUser + totalLock;
 
       maxAllocation = totalInvestedByUser / totalInvested * project.maxAllocation;
     }
 
-    return res.send({ isRegistered, investedAmount, maxAllocation, project });
+    return res.send({
+      isRegistered,
+      investedAmount,
+      maxAllocation,
+      project
+    });
   }
 
   public async registerForProject(req: Request, res: Response) {
@@ -118,7 +156,6 @@ class ProjectController {
   public async investForProject(req: Request, res: Response) {
     const schema = Joi.object().keys({
       hash: Joi.string().required(),
-      timestamp: Joi.date().required(),
       projectId: Joi.number().required(),
       walletAddress: Joi.string().required(),
       amount: Joi.number().required()
@@ -132,21 +169,21 @@ class ProjectController {
     }
 
     try {
-      await DB.Commit.create(req.body);
+      const { hash, ...rest } = req.body;
+      await DB.Commit.create({ ...rest, trxTimestamp: new Date(), trxHash: hash });
 
-      return res.send({ success: true, alreadyRegsiter: false });
+      return res.send({ success: true });
     } catch (e) {
       console.log('Registration failed', e);
-      return res.send({ success: false, alreadyRegister: false });
+      return res.send({ success: false });
     }
   }
 
   public async generateSignature(req: Request, res: Response) {
-    const REDIS_KEY = 'user:signature';
-
     const schema = Joi.object().keys({
       projectId: Joi.number().required(),
       commitAmount: Joi.number().required(),
+      decimal: Joi.number().required(),
       walletAddress: Joi.string().required(),
     });
     const validationResult = schema.validate(req.body);
@@ -157,13 +194,29 @@ class ProjectController {
       return res.status(422).json({ message: 'Invalid request', error });
     }
 
-    const { commitAmount, projectId, walletAddress } = req.body;
+    const { commitAmount, decimal, projectId, walletAddress } = req.body;
 
-    const key = `${walletAddress}:${projectId}`;
-    const alreadyExist = await Redis.getKey(REDIS_KEY, key);
+    const convertedAmount = commitAmount / Math.pow(10, decimal);
+    const key = `${projectId}:${walletAddress}`;
+    const cachedSignature = await RedisClient.getKey(SIGNATURE_REDIS_KEY, key);
+    
+    if (cachedSignature) {
+      const cacheObj = JSON.parse(cachedSignature) as CachedSignature;
 
-    if (alreadyExist) res.send({ message: alreadyExist });
+      if (convertedAmount === cacheObj.convertedAmount) {
+        return res.send({
+          success: true,
+          signature: cacheObj.signature,
+          salt: cacheObj.salt,
+          duration: null,
+        });
+      } else {
+        const duration = moment(cacheObj.expiryAt).diff(moment(), 'minutes');
 
+        return res.send({ success: false, signature: null, salt: null, duration });
+      }
+    }
+    
     const project = await DB.Project.findByPk(projectId);
 
     if (!project) return res.status(422).json({ message: 'Project not found' }); 
@@ -183,18 +236,24 @@ class ProjectController {
       );
   
       // generate signature from the concated data
-      const signature = await web3.eth.accounts.sign(hashMsg!, account.privateKey);
+      const { signature } = await web3.eth.accounts.sign(hashMsg!, account.privateKey);
 
-      await Redis.setKeyWithExpiry(REDIS_KEY, walletAddress, signature.signature, 3000); // 5 minutes
-  
-      return res.send({ message: signature.signature })
+      const cachePayload: CachedSignature = {
+        convertedAmount,
+        signature,
+        salt,
+        expiryAt: moment().add(5, 'minutes').toDate()
+      }
+      const payload: string = JSON.stringify(cachePayload);
+      await RedisClient.setKeyWithExpiry(SIGNATURE_REDIS_KEY, key, payload, 300); // 5 minutes
+
+      return res.send({ success: true, signature, salt, duration: null });
     } catch (e) {
       console.log(`Failed to generate signature for project: ${project.name} & address: ${walletAddress}`);
       console.error(e);
-      return res.send({ message: null })
+      return res.send({ success: false, signature: null, salt: null, duration: null });
     }
   }
-
 }
 
 export { ProjectController };

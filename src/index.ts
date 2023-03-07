@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { userRouter, apiRouter } from "./routes/api.router";
+import { RedisClient } from "./utils/redis";
 
 require("dotenv").config();
 
@@ -42,6 +43,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 const port = process.env.APP_PORT || 3000;
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`listening to port ${port}...`);
+
+  await RedisClient.client.connect();
 });

@@ -29,7 +29,7 @@ export class Commit extends Model implements CommitAttributes {
         field: 'id'
       },
       projectId: { type: DataTypes.INTEGER },
-      status: { type: DataTypes.STRING, defaultValue: TRANSACTION_STATUS.INIT },
+      status: { type: DataTypes.STRING, defaultValue: TRANSACTION_STATUS.SUCCESS },
       trxHash: { type: DataTypes.STRING },
       trxTimestamp: { type: DataTypes.DATE },
       walletAddress: { type: DataTypes.STRING },
