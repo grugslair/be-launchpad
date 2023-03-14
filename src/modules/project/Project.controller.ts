@@ -24,6 +24,7 @@ interface CachedSignature {
 class ProjectController {
   constructor() {
     this.getProjectById = this.getProjectById.bind(this);
+    this.getActiveProjects = this.getActiveProjects.bind(this);
   }
 
   async #getTotalLock(projectId: number) {
@@ -69,11 +70,6 @@ class ProjectController {
           required: false,
           where: { walletAddress },
         },
-        {
-          model: DB.Commit,
-          required: false,
-          where: { walletAddress, status: 'success' },
-        }
       );
     }
 
@@ -81,7 +77,32 @@ class ProjectController {
 
     const projects = await DB.Project.findAll(options);
 
-    return res.send(projects);
+    const response = await BluePromise.mapSeries(projects, async prj => {
+      const project = JSON.parse(JSON.stringify(prj));
+      let investedAmount = 0; // invested by user
+      let totalInvestedAmount = 0; // invested by all users
+
+      const commits = await DB.Commit.findAll({
+        where: {
+          projectId: project.id,
+          status: TRANSACTION_STATUS.SUCCESS
+        }
+      });
+
+      const totalLock = await this.#getTotalLock(Number(project.id));
+      const totalInvested = commits.reduce((a, b) => a += b.amount, 0);
+      const totalInvestedByUser = commits
+        .filter((a) => a.walletAddress === walletAddress)
+        .reduce((a, b) => a += b.amount, 0);
+
+      investedAmount = totalInvestedByUser + totalLock;
+      totalInvestedAmount = totalInvested + totalLock;
+      Object.assign(project, { investedAmount, totalInvestedAmount });
+
+      return project;
+    });
+
+    return res.send(response);
   }
 
   public async getProjectById(req: Request, res: Response) {
