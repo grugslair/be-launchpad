@@ -6,6 +6,7 @@ import moment from "moment";
 import { DB } from "../../database/models";
 import { RedisClient } from "../../utils/redis";
 import { TRANSACTION_STATUS } from "../../utils/constants";
+import { Includeable } from "sequelize/types";
 const { env } = process;
 
 
@@ -42,24 +43,43 @@ class ProjectController {
   }
 
   public async getActiveProjects(req: Request, res: Response) {
-    const projects = await DB.Project.findAll({
-      where: { status: 'on_going' },
-      include: [
+    const { query: { walletAddress } } = req;
+
+    const where = { status: 'on_going' };
+    const include: Includeable[] = [
+      {
+        model: DB.Chain
+      },
+      {
+        model: DB.VestingRule
+      },
+      {
+        model: DB.Currency,
+        include: [{
+          model: DB.Chain,
+          through: { attributes: [] },
+        }]
+      },
+    ];
+
+    if (walletAddress) {
+      include.push(
         {
-          model: DB.VestingRule
+          model: DB.Registration,
+          required: false,
+          where: { walletAddress },
         },
         {
-          model: DB.Currency,
-          include: [{
-            model: DB.Chain,
-            through: { attributes: [] },
-          }]
-        },
-        {
-          model: DB.Chain
+          model: DB.Commit,
+          required: false,
+          where: { walletAddress, status: 'success' },
         }
-      ]
-    });
+      );
+    }
+
+    const options = { where, include };
+
+    const projects = await DB.Project.findAll(options);
 
     return res.send(projects);
   }
@@ -67,7 +87,8 @@ class ProjectController {
   public async getProjectById(req: Request, res: Response) {
     const { params: { projectId }, query: { walletAddress } } = req;
     let isRegistered = false;
-    let investedAmount = 0;
+    let investedAmount = 0; // invested by user
+    let totalInvestedAmount = 0; // invested by all users
     let maxAllocation = 0;
 
     const project = await DB.Project.findByPk(req.params.projectId, {
@@ -109,6 +130,7 @@ class ProjectController {
         .reduce((a, b) => a += b.amount, 0);
 
       investedAmount = totalInvestedByUser + totalLock;
+      totalInvestedAmount = totalInvested + totalLock;
 
       maxAllocation = totalInvestedByUser / totalInvested * project.maxAllocation;
     }
@@ -116,6 +138,7 @@ class ProjectController {
     return res.send({
       isRegistered,
       investedAmount,
+      totalInvestedAmount,
       maxAllocation,
       project
     });
