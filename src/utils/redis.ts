@@ -1,7 +1,7 @@
 import { createClient, RedisClientType } from 'redis';
 const { env } = process;
 
-function set(key: string, id: string) {
+function set(key: string, id: string): string {
   return env.REDIS_PREFIX + ':' + key + ':' + id;
 }
 
@@ -14,6 +14,10 @@ class Client {
 
   getKey(key: string, id: string): Promise<string | null> {
     return this.client.get(set(key, id));
+  }
+
+  delKey(key: string, id: string): Promise<number | null> {
+    return this.client.del(set(key, id));
   }
 
   setKey(key: string, id: string, val: any): Promise<string | null> {

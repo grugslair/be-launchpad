@@ -131,11 +131,13 @@ class ProjectController {
     });
     
     if (walletAddress && project) {
-      const registration = await DB.Registration.findOne({
-        where: { projectId, walletAddress }
+      const registrations = await DB.Registration.findAll({
+        where: { projectId }
       });
 
-      if (registration) isRegistered = true;
+      const userRegistration = registrations.filter((reg) => reg.walletAddress === walletAddress);
+
+      if (userRegistration.length) isRegistered = true;
 
       const commits = await DB.Commit.findAll({
         where: {
@@ -153,7 +155,9 @@ class ProjectController {
       investedAmount = totalInvestedByUser + totalLock;
       totalInvestedAmount = totalInvested + totalLock;
 
-      maxAllocation = totalInvestedByUser / totalInvested * project.maxAllocation;
+      const totalStake = registrations.reduce((a, b) => a += b.amount, 0);
+      const totalStakeByUser = userRegistration.reduce((a, b) => a += b.amount, 0);
+      maxAllocation = totalStakeByUser / totalStake * project.maxAllocation;
     }
 
     return res.send({
@@ -215,6 +219,8 @@ class ProjectController {
     try {
       const { hash, ...rest } = req.body;
       await DB.Commit.create({ ...rest, trxTimestamp: new Date(), trxHash: hash });
+      const redisKey = `${req.body.projectId}:${req.body.walletAddress}`;
+      await RedisClient.delKey(SIGNATURE_REDIS_KEY, redisKey);
 
       return res.send({ success: true });
     } catch (e) {
