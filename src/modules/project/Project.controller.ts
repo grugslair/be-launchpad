@@ -95,7 +95,7 @@ class ProjectController {
         .filter((a) => a.walletAddress === walletAddress)
         .reduce((a, b) => a += b.amount, 0);
 
-      investedAmount = totalInvestedByUser + totalLock;
+      investedAmount = totalInvestedByUser;
       totalInvestedAmount = totalInvested + totalLock;
       Object.assign(project, { investedAmount, totalInvestedAmount });
 
@@ -152,7 +152,7 @@ class ProjectController {
         .filter((a) => a.walletAddress === walletAddress)
         .reduce((a, b) => a += b.amount, 0);
 
-      investedAmount = totalInvestedByUser + totalLock;
+      investedAmount = totalInvestedByUser;
       totalInvestedAmount = totalInvested + totalLock;
 
       const totalStake = registrations.reduce((a, b) => a += b.amount, 0);
