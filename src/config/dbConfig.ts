@@ -14,12 +14,7 @@ const defaultDBconfig = {
     underscored: true,
   },
   ssl: true,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
+  dialectOptions: {},
 };
 
 const DBconfig: Record<string, Options> = {

@@ -34,6 +34,11 @@ export class Chain extends Model implements ChainAttributes {
       sequelize,
       tableName: 'chains',
       underscored: true,
+      defaultScope: {
+        attributes: {
+          exclude: ['createdAt', 'updatedAt'],
+        }
+      }
     });
   }
 

@@ -14,8 +14,9 @@ const SQL = new Sequelize(
 import { Chain, ChainAttributes } from './chain';
 import { Commit, CommitAttributes } from './commit';
 import { Currency, CurrencyAttributes } from './currency';
-import { CurrencyToChain } from './currencyToChain';
+import { ProjectCurrencyChain } from './projectCurrencyChain';
 import { Project, ProjectAttributes } from './project';
+import { ProjectVesting } from './projectVesting';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
 import { Registration } from './registration';
 import { Report } from './report';
@@ -24,8 +25,9 @@ const models = {
   Chain,
   Commit,
   Currency,
-  CurrencyToChain,
+  ProjectCurrencyChain,
   Project,
+  ProjectVesting,
   Registration,
   Report,
   VestingRule,

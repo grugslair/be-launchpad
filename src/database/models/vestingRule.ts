@@ -35,6 +35,11 @@ export class VestingRule extends Model implements VestingRuleAttributes {
       tableName: 'vesting_rules',
 //      paranoid: true,
       underscored: true,
+      defaultScope: {
+        attributes: {
+          exclude: ['createdAt', 'updatedAt'],
+        }
+      }
     });
   }
 

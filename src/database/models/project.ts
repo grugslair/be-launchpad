@@ -2,6 +2,7 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import { Chain } from './chain';
 import { Commit } from './commit';
 import { Currency } from './currency';
+import { ProjectVesting } from './projectVesting';
 import { Registration } from './registration';
 import { VestingRule } from './vestingRule';
 
@@ -120,6 +121,7 @@ export class Project extends Model implements ProjectAttributes {
     Project.belongsTo(Chain, { foreignKey: 'chainId' });
     Project.belongsTo(Currency, { foreignKey: 'publicSaleCurrencyId' });
     Project.belongsTo(VestingRule, { foreignKey: 'vestingRuleId' });
+    Project.hasOne(ProjectVesting, { foreignKey: 'projectId' });
     Project.hasMany(Registration, { foreignKey: 'projectId' });
     Project.hasMany(Commit, { foreignKey: 'projectId' });
   }

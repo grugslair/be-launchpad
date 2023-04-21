@@ -112,21 +112,30 @@ class ProjectController {
     let totalInvestedAmount = 0; // invested by all users
     let maxAllocation = 0;
 
-    const project = await DB.Project.findByPk(req.params.projectId, {
+    const project = await DB.Project.findByPk(projectId, {
       include: [
-        {
-          model: DB.VestingRule
-        },
+        { model: DB.VestingRule },
+        { model: DB.ProjectVesting },
+        { model: DB.Chain },
         {
           model: DB.Currency,
           include: [{
             model: DB.Chain,
-            through: { attributes: [] },
+            attributes: {
+              include: [
+                [
+                  DB.Sequelize.literal('"Currency->Chains->ProjectCurrencyChain".contract_address'),
+                  'commitContractAddress'
+                ],
+                [
+                  DB.Sequelize.literal('"Currency->Chains->ProjectCurrencyChain".version'),
+                  'version'
+                ],
+              ],
+            },
+            through: { attributes: [], where: { projectId  } },
           }]
         },
-        {
-          model: DB.Chain
-        }
       ]
     });
     

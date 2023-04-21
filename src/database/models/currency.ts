@@ -41,7 +41,7 @@ export class Currency extends Model implements CurrencyAttributes {
     // set assoc here
     Currency.belongsToMany(sequelize.models.Chain, {
       through: {
-        model: sequelize.models.CurrencyToChain,
+        model: sequelize.models.ProjectCurrencyChain,
         unique: false,
       },
       foreignKey: 'currencyId',
