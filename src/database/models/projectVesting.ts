@@ -2,7 +2,6 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface ProjectVestingAttributes {
   id: number;
-  chainId: number;
   vestingContractAddress: string;
   version: number;
   details: Record<string, any>;
@@ -10,7 +9,6 @@ export interface ProjectVestingAttributes {
 
 export class ProjectVesting extends Model implements ProjectVestingAttributes {
   public id!: number;
-  public chainId!: number;
   public vestingContractAddress!: string;
   public version!: number;
   public details!: Record<string, any>;

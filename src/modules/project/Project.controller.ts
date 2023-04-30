@@ -49,17 +49,10 @@ class ProjectController {
     const where = { status: 'on_going' };
     const include: Includeable[] = [
       {
-        model: DB.Chain
-      },
-      {
         model: DB.VestingRule
       },
       {
         model: DB.Currency,
-        include: [{
-          model: DB.Chain,
-          through: { attributes: [] },
-        }]
       },
     ];
 
@@ -113,29 +106,12 @@ class ProjectController {
     let maxAllocation = 0;
 
     const project = await DB.Project.findByPk(projectId, {
+      logging: console.log,
       include: [
         { model: DB.VestingRule },
         { model: DB.ProjectVesting },
-        { model: DB.Chain },
-        {
-          model: DB.Currency,
-          include: [{
-            model: DB.Chain,
-            attributes: {
-              include: [
-                [
-                  DB.Sequelize.literal('"Currency->Chains->ProjectCurrencyChain".contract_address'),
-                  'commitContractAddress'
-                ],
-                [
-                  DB.Sequelize.literal('"Currency->Chains->ProjectCurrencyChain".version'),
-                  'version'
-                ],
-              ],
-            },
-            through: { attributes: [], where: { projectId  } },
-          }]
-        },
+        { model: DB.Currency },
+        { model: DB.ProjectCommit }
       ]
     });
     

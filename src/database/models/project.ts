@@ -1,14 +1,13 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import { Chain } from './chain';
 import { Commit } from './commit';
 import { Currency } from './currency';
 import { ProjectVesting } from './projectVesting';
+import { ProjectCommit } from './projectCommit';
 import { Registration } from './registration';
 import { VestingRule } from './vestingRule';
 
 export interface ProjectAttributes {
   id: number
-  chainId: number
   vestingRuleId: number
   name: string
   tokenContractAddress: string
@@ -41,7 +40,6 @@ export interface ProjectAttributes {
 
 export class Project extends Model implements ProjectAttributes {
   public id!: number;
-  public chainId!: number;
   public vestingRuleId!: number;
   public name!: string;
   public tokenContractAddress!: string;
@@ -79,7 +77,6 @@ export class Project extends Model implements ProjectAttributes {
         primaryKey: true,
         field: 'id'
       },
-      chainId: { type: DataTypes.INTEGER },
       vestingRuleId: { type: DataTypes.INTEGER },
       name: { type: DataTypes.STRING },
       tokenContractAddress: { type: DataTypes.STRING },
@@ -118,12 +115,12 @@ export class Project extends Model implements ProjectAttributes {
 
   static associateModel(): void {
     // set assoc here
-    Project.belongsTo(Chain, { foreignKey: 'chainId' });
     Project.belongsTo(Currency, { foreignKey: 'publicSaleCurrencyId' });
     Project.belongsTo(VestingRule, { foreignKey: 'vestingRuleId' });
     Project.hasOne(ProjectVesting, { foreignKey: 'projectId' });
     Project.hasMany(Registration, { foreignKey: 'projectId' });
     Project.hasMany(Commit, { foreignKey: 'projectId' });
+    Project.hasMany(ProjectCommit, { foreignKey: 'projectId' });
   }
 }
 
