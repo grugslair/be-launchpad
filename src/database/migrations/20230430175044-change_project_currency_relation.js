@@ -5,10 +5,12 @@ const CURRENCY = 'currencies';
 const PROJECT_TO_CURRENCY = 'project_to_currency';
 
 const PROJECT_CURRENCY_ID = 'public_sale_currency_id';
+const PROJECT_CURRENCY_SYMBOL = 'public_sale_currency_symbol';
 
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.removeColumn(PROJECT, PROJECT_CURRENCY_ID);
+    await queryInterface.addColumn(PROJECT, PROJECT_CURRENCY_SYMBOL, { type: Sequelize.STRING });
 
     await queryInterface.createTable(PROJECT_TO_CURRENCY, {
       project_id: {
@@ -52,6 +54,8 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
+    await queryInterface.dropTable(PROJECT_TO_CURRENCY);
+    await queryInterface.removeColumn(PROJECT, PROJECT_CURRENCY_SYMBOL);
     await queryInterface.addColumn(PROJECT, PROJECT_CURRENCY_ID, {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -65,6 +69,5 @@ module.exports = {
         onDelete: 'CASCADE',
       },
     });
-    await queryInterface.dropTable(PROJECT_TO_CURRENCY);
   }
 };

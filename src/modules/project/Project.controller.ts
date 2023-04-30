@@ -106,14 +106,21 @@ class ProjectController {
     let maxAllocation = 0;
 
     const project = await DB.Project.findByPk(projectId, {
-      // logging: console.log,
       include: [
         { model: DB.VestingRule },
         { model: DB.ProjectVesting },
         {
           model: DB.Currency,
+          attributes: {
+            include: [
+              [DB.Sequelize.literal('"Currencies->ProjectCommit"."contract_address"'), 'commitContractAddress']
+            ]
+          },
           through: { attributes: [] },
-          include: [ DB.ProjectCommit ]
+          include: [{
+            model: DB.ProjectCommit,
+            attributes: []
+          }]
         },
       ]
     });

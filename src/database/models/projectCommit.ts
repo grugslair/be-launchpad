@@ -4,21 +4,21 @@ export interface ProjectCommitAttributes {
   currencyId: number;
   projectId: number;
   version: number;
-  contractAddress: string;
+  commitContractAddress: string;
 }
 
 export class ProjectCommit extends Model implements ProjectCommitAttributes {
   public currencyId!: number;
   public projectId!: number;
   public version!: number;
-  public contractAddress!: string;
+  public commitContractAddress!: string;
 
   static initModel(sequelize: Sequelize): void {
     ProjectCommit.init({
       currencyId: { type: DataTypes.INTEGER },
       projectId: { type: DataTypes.INTEGER },
       version: { type: DataTypes.INTEGER },
-      contractAddress: { type: DataTypes.STRING },
+      commitContractAddress: { type: DataTypes.STRING, field: 'contract_address' },
     }, {
       sequelize,
       tableName: 'project_commit',
