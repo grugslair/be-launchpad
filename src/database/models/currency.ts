@@ -54,7 +54,7 @@ export class Currency extends Model implements CurrencyAttributes {
 
   static associateModel(sequelize: Sequelize): void {
     // set assoc here
-    Currency.hasMany(sequelize.models.ProjectCommit, {
+    Currency.hasOne(sequelize.models.ProjectCommit, {
       foreignKey: 'currencyId',
     });
   }

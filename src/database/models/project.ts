@@ -5,6 +5,7 @@ import { ProjectVesting } from './projectVesting';
 import { ProjectCommit } from './projectCommit';
 import { Registration } from './registration';
 import { VestingRule } from './vestingRule';
+import { ProjectToCurrency } from './projectToCurrency';
 
 export interface ProjectAttributes {
   id: number
@@ -24,7 +25,6 @@ export interface ProjectAttributes {
   publicSaleTokenAmount: string
   publicSaleTokenSold: string
   publicSalePrice: string
-  publicSaleCurrencyId: string
   maxAllocation: number
   minStaking: number
   registrationPeriodStart: Date
@@ -56,7 +56,6 @@ export class Project extends Model implements ProjectAttributes {
   public publicSaleTokenAmount!: string;
   public publicSaleTokenSold!: string;
   public publicSalePrice!: string;
-  public publicSaleCurrencyId!: string;
   public minStaking!: number;
   public maxAllocation!: number;
   public registrationPeriodStart!: Date;
@@ -93,7 +92,6 @@ export class Project extends Model implements ProjectAttributes {
       publicSaleTokenAmount: { type: DataTypes.STRING },
       publicSaleTokenSold: { type: DataTypes.STRING },
       publicSalePrice: { type: DataTypes.STRING },
-      publicSaleCurrencyId: { type: DataTypes.INTEGER },
       minStaking: { type: DataTypes.FLOAT },
       maxAllocation: { type: DataTypes.FLOAT },
       registrationPeriodStart: { type: DataTypes.DATE },
@@ -115,7 +113,14 @@ export class Project extends Model implements ProjectAttributes {
 
   static associateModel(): void {
     // set assoc here
-    Project.belongsTo(Currency, { foreignKey: 'publicSaleCurrencyId' });
+    Project.belongsToMany(Currency, {
+      through: {
+        model: ProjectToCurrency,
+        unique: false
+      },
+      foreignKey: 'projectId',
+      constraints: false,
+    });
     Project.belongsTo(VestingRule, { foreignKey: 'vestingRuleId' });
     Project.hasOne(ProjectVesting, { foreignKey: 'projectId' });
     Project.hasMany(Registration, { foreignKey: 'projectId' });

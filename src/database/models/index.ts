@@ -16,6 +16,7 @@ import { Currency, CurrencyAttributes } from './currency';
 import { ProjectCommit } from './projectCommit';
 import { Project, ProjectAttributes } from './project';
 import { ProjectVesting } from './projectVesting';
+import { ProjectToCurrency } from './projectToCurrency';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
 import { Registration } from './registration';
 import { Report } from './report';
@@ -26,6 +27,7 @@ const models = {
   ProjectCommit,
   Project,
   ProjectVesting,
+  ProjectToCurrency,
   Registration,
   Report,
   VestingRule,

@@ -106,12 +106,15 @@ class ProjectController {
     let maxAllocation = 0;
 
     const project = await DB.Project.findByPk(projectId, {
-      logging: console.log,
+      // logging: console.log,
       include: [
         { model: DB.VestingRule },
         { model: DB.ProjectVesting },
-        { model: DB.Currency },
-        { model: DB.ProjectCommit }
+        {
+          model: DB.Currency,
+          through: { attributes: [] },
+          include: [ DB.ProjectCommit ]
+        },
       ]
     });
     
