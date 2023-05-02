@@ -231,7 +231,7 @@ class ProjectController {
   public async generateSignature(req: Request, res: Response) {
     const schema = Joi.object().keys({
       projectId: Joi.number().required(),
-      commitAmount: Joi.number().required(),
+      commitAmount: Joi.number().unsafe().required(),
       decimal: Joi.number().required(),
       walletAddress: Joi.string().required(),
     });

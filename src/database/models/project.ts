@@ -27,6 +27,7 @@ export interface ProjectAttributes {
   publicSaleTokenAmount: string
   publicSaleTokenSold: string
   publicSalePrice: string
+  publicSaleCurrencySymbol: string
   maxAllocation: number
   minStaking: number
   registrationPeriodStart: Date
@@ -59,6 +60,7 @@ export class Project extends Model implements ProjectAttributes {
   public publicSaleTokenAmount!: string;
   public publicSaleTokenSold!: string;
   public publicSalePrice!: string;
+  public publicSaleCurrencySymbol!: string;
   public minStaking!: number;
   public maxAllocation!: number;
   public registrationPeriodStart!: Date;
@@ -96,6 +98,7 @@ export class Project extends Model implements ProjectAttributes {
       publicSaleTokenAmount: { type: DataTypes.STRING },
       publicSaleTokenSold: { type: DataTypes.STRING },
       publicSalePrice: { type: DataTypes.STRING },
+      publicSaleCurrencySymbol: { type: DataTypes.STRING },
       minStaking: { type: DataTypes.FLOAT },
       maxAllocation: { type: DataTypes.FLOAT },
       registrationPeriodStart: { type: DataTypes.DATE },
