@@ -52,6 +52,9 @@ class ProjectController {
         model: DB.VestingRule
       },
       {
+        model: DB.Chain
+      },
+      {
         model: DB.Currency,
       },
     ];
@@ -107,6 +110,7 @@ class ProjectController {
 
     const project = await DB.Project.findByPk(projectId, {
       include: [
+        { model: DB.Chain },
         { model: DB.VestingRule },
         { model: DB.ProjectVesting },
         {

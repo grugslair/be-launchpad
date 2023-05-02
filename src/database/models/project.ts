@@ -6,9 +6,11 @@ import { ProjectCommit } from './projectCommit';
 import { Registration } from './registration';
 import { VestingRule } from './vestingRule';
 import { ProjectToCurrency } from './projectToCurrency';
+import { Chain } from './chain';
 
 export interface ProjectAttributes {
   id: number
+  chainId: number
   vestingRuleId: number
   name: string
   tokenContractAddress: string
@@ -40,6 +42,7 @@ export interface ProjectAttributes {
 
 export class Project extends Model implements ProjectAttributes {
   public id!: number;
+  public chainId!: number;
   public vestingRuleId!: number;
   public name!: string;
   public tokenContractAddress!: string;
@@ -76,6 +79,7 @@ export class Project extends Model implements ProjectAttributes {
         primaryKey: true,
         field: 'id'
       },
+      chainId: { type: DataTypes.INTEGER },
       vestingRuleId: { type: DataTypes.INTEGER },
       name: { type: DataTypes.STRING },
       tokenContractAddress: { type: DataTypes.STRING },
@@ -121,6 +125,7 @@ export class Project extends Model implements ProjectAttributes {
       foreignKey: 'projectId',
       constraints: false,
     });
+    Project.belongsTo(Chain, { foreignKey: 'chainId' });
     Project.belongsTo(VestingRule, { foreignKey: 'vestingRuleId' });
     Project.hasOne(ProjectVesting, { foreignKey: 'projectId' });
     Project.hasMany(Registration, { foreignKey: 'projectId' });

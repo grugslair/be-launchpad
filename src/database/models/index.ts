@@ -12,6 +12,7 @@ const SQL = new Sequelize(
 
 // IMPORT MODELS
 import { Commit, CommitAttributes } from './commit';
+import { Chain, ChainAttributes } from './chain';
 import { Currency, CurrencyAttributes } from './currency';
 import { ProjectCommit } from './projectCommit';
 import { Project, ProjectAttributes } from './project';
@@ -23,6 +24,7 @@ import { Report } from './report';
 
 const models = {
   Commit,
+  Chain,
   Currency,
   ProjectCommit,
   Project,
@@ -41,6 +43,7 @@ const DB = { Sequelize: SQL, ...models };
 
 export {
   DB,
+  ChainAttributes,
   CommitAttributes,
   CurrencyAttributes,
   ProjectAttributes,
