@@ -1,11 +1,11 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 import { Commit } from './commit';
-import { Currency } from './currency';
+import { Currency, CurrencyAttributes } from './currency';
 import { ProjectVesting } from './projectVesting';
 import { ProjectCommit } from './projectCommit';
 import { Registration } from './registration';
 import { VestingRule } from './vestingRule';
-import { ProjectToCurrency } from './projectToCurrency';
+import { ProjectToCurrency, ProjectToCurrencyAttributes } from './projectToCurrency';
 import { Chain } from './chain';
 
 export interface ProjectAttributes {
@@ -14,7 +14,6 @@ export interface ProjectAttributes {
   vestingRuleId: number
   name: string
   tokenContractAddress: string
-  crowdSmartContract: string
   tokenSymbol: string
   tokenDecimals: number
   tokenInitialSupply: string
@@ -47,7 +46,6 @@ export class Project extends Model implements ProjectAttributes {
   public vestingRuleId!: number;
   public name!: string;
   public tokenContractAddress!: string;
-  public crowdSmartContract!: string;
   public tokenSymbol!: string;
   public tokenDecimals!: number;
   public tokenInitialSupply!: string;
@@ -72,6 +70,7 @@ export class Project extends Model implements ProjectAttributes {
   public twitterUrl!: string;
   public mediumUrl!: string;
   public officialUrl!: string;
+  public Currencies?: CurrencyAttributes[];
 
   static initModel(sequelize: Sequelize): void {
     Project.init({
@@ -85,7 +84,6 @@ export class Project extends Model implements ProjectAttributes {
       vestingRuleId: { type: DataTypes.INTEGER },
       name: { type: DataTypes.STRING },
       tokenContractAddress: { type: DataTypes.STRING },
-      crowdSmartContract: { type: DataTypes.STRING },
       tokenSymbol: { type: DataTypes.STRING },
       tokenDecimals: { type: DataTypes.INTEGER },
       tokenInitialSupply: { type: DataTypes.STRING },
@@ -134,6 +132,7 @@ export class Project extends Model implements ProjectAttributes {
     Project.hasMany(Registration, { foreignKey: 'projectId' });
     Project.hasMany(Commit, { foreignKey: 'projectId' });
     Project.hasMany(ProjectCommit, { foreignKey: 'projectId' });
+    Project.hasMany(ProjectToCurrency, { foreignKey: 'projectId' });
   }
 }
 

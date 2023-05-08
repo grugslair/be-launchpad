@@ -1,17 +1,19 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
+import { ProjectToCurrencyAttributes } from './projectToCurrency';
 
 export interface CurrencyAttributes {
   id: number
   symbol: string
   contractAddress: string
   chainName: string
-  networkId: string
+  networkId: number
   rpcUrl: string
   chainLogo: string
   chainColor: string
   name: string
   decimals: number
   rate: number
+  ProjectToCurrency?: ProjectToCurrencyAttributes;
 }
 
 export class Currency extends Model implements CurrencyAttributes {
@@ -19,13 +21,14 @@ export class Currency extends Model implements CurrencyAttributes {
   public symbol!: string
   public contractAddress!: string
   public chainName!: string
-  public networkId!: string
+  public networkId!: number
   public rpcUrl!: string
   public chainLogo!: string
   public chainColor!: string
   public name!: string
   public decimals!: number
   public rate!: number
+  public ProjectToCurrency?: ProjectToCurrencyAttributes;
 
   static initModel(sequelize: Sequelize): void {
     Currency.init({
@@ -41,7 +44,7 @@ export class Currency extends Model implements CurrencyAttributes {
       decimals: { type: DataTypes.INTEGER },
       rate: { type: DataTypes.INTEGER },
       chainName: { type: DataTypes.STRING },
-      networkId: { type: DataTypes.STRING },
+      networkId: { type: DataTypes.INTEGER },
       rpcUrl: { type: DataTypes.STRING },
       chainLogo: { type: DataTypes.STRING },
       chainColor: { type: DataTypes.STRING },

@@ -3,16 +3,19 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 export interface ProjectToCurrencyAttributes {
   projectId: number;
   currencyId: number;
+  crowdSmartContract: string;
 }
 
 export class ProjectToCurrency extends Model implements ProjectToCurrencyAttributes {
   public projectId!: number;
   public currencyId!: number;
+  public crowdSmartContract!: string;
 
   static initModel(sequelize: Sequelize): void {
     ProjectToCurrency.init({
       projectId: { type: DataTypes.INTEGER },
       currencyId: { type: DataTypes.INTEGER },
+      crowdSmartContract: { type: DataTypes.STRING },
     }, {
       sequelize,
       tableName: 'project_to_currency',

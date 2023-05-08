@@ -117,7 +117,8 @@ class ProjectController {
           model: DB.Currency,
           attributes: {
             include: [
-              [DB.Sequelize.literal('"Currencies->ProjectCommit"."contract_address"'), 'commitContractAddress']
+              [DB.Sequelize.literal('"Currencies->ProjectCommit"."contract_address"'), 'commitContractAddress'],
+              [DB.Sequelize.literal('"Currencies->ProjectCommit"."version"'), 'version']
             ]
           },
           through: { attributes: [] },
@@ -193,7 +194,7 @@ class ProjectController {
   
       await DB.Registration.create(req.body);
   
-      return res.send({ success: true, alreadyRegsiter: false });
+      return res.send({ success: true, alreadyRegister: false });
     } catch (e) {
       console.log('Registration failed', e);
       return res.send({ success: false, alreadyRegister: false });
@@ -231,6 +232,7 @@ class ProjectController {
   public async generateSignature(req: Request, res: Response) {
     const schema = Joi.object().keys({
       projectId: Joi.number().required(),
+      networkId: Joi.number().required(),
       commitAmount: Joi.number().unsafe().required(),
       decimal: Joi.number().required(),
       walletAddress: Joi.string().required(),
@@ -243,7 +245,7 @@ class ProjectController {
       return res.status(422).json({ message: 'Invalid request', error });
     }
 
-    const { commitAmount, decimal, projectId, walletAddress } = req.body;
+    const { commitAmount, decimal, projectId, walletAddress, networkId } = req.body;
 
     const convertedAmount = commitAmount / Math.pow(10, decimal);
     const key = `${projectId}:${walletAddress}`;
@@ -266,9 +268,22 @@ class ProjectController {
       }
     }
     
-    const project = await DB.Project.findByPk(projectId);
+    const project = await DB.Project.findByPk(projectId, {
+      include: {
+        model: DB.Currency,
+        required: true,
+        where: { networkId },
+        through: { attributes: ['crowdSmartContract'] }
+      }
+    });
 
-    if (!project) return res.status(422).json({ message: 'Project not found' }); 
+    if (!project || !project.Currencies?.length) {
+      return res.status(422).json({ message: 'Project not found' }); 
+    }
+    
+    const { ProjectToCurrency } = project.Currencies[0];
+
+    if (!ProjectToCurrency) return res.status(422).json({ message: 'Project currency not found' }); 
 
     try {
       const WEB3_URL = isProd() ? env.PRD_WEB3_URL : env.STG_WEB3_URL;
@@ -280,7 +295,7 @@ class ProjectController {
       const hashMsg = web3.utils.soliditySha3(
         walletAddress,
         commitAmount,
-        project.crowdSmartContract,
+        ProjectToCurrency.crowdSmartContract,
         salt
       );
   
