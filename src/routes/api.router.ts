@@ -3,6 +3,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { AuthController } from "../modules/auth/Auth.controller";
 import { ProjectController } from "../modules/project/Project.controller";
 import { ReportController } from "../modules/report/Report.controller";
+import { RaffleController } from "../modules/raffle/Raffle.controller";
 
 const userRouter: Router = express.Router();
 // Can define more router if needed
@@ -11,6 +12,7 @@ const userRouter: Router = express.Router();
 const authController = new AuthController();
 const projectController = new ProjectController();
 const reportController = new ReportController();
+const raffleController = new RaffleController();
 
 const wrap = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -37,9 +39,9 @@ apiRouter.get('/projects/:projectId', wrap(projectController.getProjectById));
 apiRouter.post('/projects/register', wrap(projectController.registerForProject));
 apiRouter.post('/projects/invest', wrap(projectController.investForProject));
 apiRouter.post('/projects/signature', wrap(projectController.generateSignature));
-
+apiRouter.post('/raffle', wrap(raffleController.updateRaffle));
 
 apiRouter.get('/reports', wrap(reportController.getAllReports));
-
+apiRouter.get('/raffle', wrap(raffleController.getRaffle));
 
 export { userRouter, apiRouter };
