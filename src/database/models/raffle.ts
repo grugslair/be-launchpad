@@ -2,6 +2,7 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface RaffleAttributes {
   starknet_wallet_address: string;
+  starknet_id: string;
   discord_id: string;
   discord_username: string;
   discord_role_wojak: boolean;
@@ -13,6 +14,7 @@ export interface RaffleAttributes {
 
 export class Raffle extends Model implements RaffleAttributes {
   public starknet_wallet_address!: string;
+  public starknet_id!: string;
   public discord_id!: string;
   public discord_username!: string;
   public discord_role_wojak!: boolean;
@@ -30,6 +32,7 @@ export class Raffle extends Model implements RaffleAttributes {
         primaryKey: true,
         field: 'starknet_wallet_address'
       },
+      starknet_id: { type: DataTypes.STRING },
       discord_id: { type: DataTypes.STRING, unique: true },
       discord_username: { type: DataTypes.STRING },
       discord_role_wojak: { type: DataTypes.BOOLEAN },
@@ -39,13 +42,14 @@ export class Raffle extends Model implements RaffleAttributes {
       twitter_followed_briq: { type: DataTypes.BOOLEAN },
     }, {
       sequelize,
-      tableName: 'raffle',
+      tableName: 'raffles',
       paranoid: true,
       underscored: true,
     });
   }
 
-  static associateModel(): void {
+  static associateModel(sequelize: Sequelize): void {
     // set associations here
+    Raffle.belongsTo(sequelize.models.Raffle, { foreignKey: 'starknet_wallet_address' });
   }
 }

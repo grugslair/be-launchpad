@@ -39,9 +39,9 @@ apiRouter.get('/projects/:projectId', wrap(projectController.getProjectById));
 apiRouter.post('/projects/register', wrap(projectController.registerForProject));
 apiRouter.post('/projects/invest', wrap(projectController.investForProject));
 apiRouter.post('/projects/signature', wrap(projectController.generateSignature));
-apiRouter.post('/raffle', wrap(raffleController.updateRaffle));
+apiRouter.get('/raffle/:starknet_wallet_address', wrap(raffleController.getRaffle));
 
 apiRouter.get('/reports', wrap(reportController.getAllReports));
-apiRouter.get('/raffle', wrap(raffleController.getRaffle));
+apiRouter.post('/raffle', wrap(raffleController.updateRaffle));
 
 export { userRouter, apiRouter };

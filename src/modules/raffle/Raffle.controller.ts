@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { DB } from "../../database/models";
-import { RaffleAttributes } from "../../database/models/Raffle";
+import { DB, RaffleAttributes } from "../../database/models";
 
 export class RaffleController {
   constructor() {
@@ -31,27 +30,41 @@ export class RaffleController {
 
   public async getRaffle(req: Request, res: Response) {
     const { starknet_wallet_address } = req.params;
-
+  
     const raffle = await DB.Raffle.findOne({
       where: { starknet_wallet_address },
       attributes: ['discord_role_wojak', 'twitter_tweeted', 'twitter_followed_grug', 'twitter_followed_briq']  // Only fetch these fields
     });
-
-    if (raffle) {
-      res.json(raffle);
-    } else {
-      res.status(404).send("Raffle not found.");
+  
+    if (!raffle) {
+      return res.status(404).send("No raffle data found for this wallet address.");
     }
+  
+    res.json(raffle);
   }
 
   public async updateRaffle(req: Request, res: Response) {
-    const { starknet_wallet_address, discord_id, discord_username, discord_role_wojak, twitter_username, twitter_tweeted, twitter_followed_grug, twitter_followed_briq } = req.body;
+    const { starknet_wallet_address, starknet_id, discord_id, discord_username, discord_role_wojak, twitter_username, twitter_tweeted, twitter_followed_grug, twitter_followed_briq } = req.body;
 
     let raffle = await DB.Raffle.findOne({
       where: { starknet_wallet_address }
     });
 
-    if (raffle) {
+    if (!raffle) {
+      raffle = await DB.Raffle.create({
+        starknet_wallet_address,
+        starknet_id,
+        discord_id,
+        discord_username,
+        discord_role_wojak: discord_role_wojak || false,
+        twitter_username,
+        twitter_tweeted: twitter_tweeted || false,
+        twitter_followed_grug: twitter_followed_grug || false,
+        twitter_followed_briq: twitter_followed_briq || false
+      });
+
+      return res.status(201).json({message: "New row created successfully", starknet_wallet_address: raffle.starknet_wallet_address});
+    } else {
       // Get grouped update parameters
       const discordUpdates = await this.getDiscordUpdates(raffle, discord_id, discord_username, discord_role_wojak);
       const twitterUpdates = await this.getTwitterUpdates(raffle, twitter_username, twitter_tweeted);
@@ -63,20 +76,16 @@ export class RaffleController {
       };
 
       // Combine all updates into a single object
-      const updateParams = { ...discordUpdates, ...twitterUpdates, ...followingUpdates };
+      const updateParams = { starknet_id, ...discordUpdates, ...twitterUpdates, ...followingUpdates };
 
       // Check if there are any fields to update
       if (Object.keys(updateParams).length > 0) {
         await raffle.update(updateParams);
+        // Return success message
+        return res.json({message: "Update successful"});
       } else {
-        return res.status(400).send("Invalid request. Grouped fields need to be updated together.");
+        return res.status(400).json({message: "No updates were made"});
       }
     }
-
-    raffle = await DB.Raffle.findOne({
-      where: { starknet_wallet_address }
-    });
-
-    res.json(raffle);
   }
 }

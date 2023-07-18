@@ -21,6 +21,7 @@ import { ProjectToCurrency } from './projectToCurrency';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
 import { Registration } from './registration';
 import { Report } from './report';
+import { Raffle, RaffleAttributes } from './raffle';
 
 const models = {
   Commit,
@@ -33,6 +34,7 @@ const models = {
   Registration,
   Report,
   VestingRule,
+  Raffle,
 };
 
 Object.values(models).map((model) => model.initModel(SQL));
@@ -47,5 +49,6 @@ export {
   CommitAttributes,
   CurrencyAttributes,
   ProjectAttributes,
-  VestingRuleAttributes
+  VestingRuleAttributes,
+  RaffleAttributes
 };
