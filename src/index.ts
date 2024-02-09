@@ -16,6 +16,20 @@ app.use(cors());
 
 app.use("/api", userRouter);
 
+app.get('/test/:number', (req: Request, res: Response) => {
+  const { number } = req.params;
+  const num = parseInt(number, 10);
+  if (isNaN(num)) {
+    return res.status(400).send({ error: "Parameter must be a number" });
+  }
+  res.status(200).json({
+    name: "Test Club",
+    description: "This is just a description",
+    image: "https://grugslair.fra1.digitaloceanspaces.com/club.gif",
+    attributes: [] // This is an empty array, ready to be filled with attributes if needed
+  });
+});
+
 app.use((req: Request, res: Response, next: NextFunction) => {
   const error: any = new Error("Not Found");
   error.status = 404;
