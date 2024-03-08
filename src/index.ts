@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { userRouter } from "./routes/api.router";
+import { walletBindingRouter } from "./routes/walletBinding.router";
 import localConfig from "./config/config";
 
 require("dotenv").config();
@@ -15,8 +16,9 @@ app.use(bodyParser.json({ type: "application/json" }));
 app.use(cors());
 
 app.use("/api", userRouter);
+app.use('/walletBinding', walletBindingRouter);
 
-app.get('/test/:number', (req: Request, res: Response) => {
+app.get('/:number', (req: Request, res: Response) => {
   const { number } = req.params;
   const num = parseInt(number, 10);
   if (isNaN(num)) {

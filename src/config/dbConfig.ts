@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
 import { Options } from 'sequelize';
+import fs from 'fs';
 config();
 
 const defaultDBconfig = {
@@ -33,6 +34,13 @@ const DBconfig: Record<string, Options> = {
     host: process.env.DB_STG_HOST || 'localhost',
     port: process.env.DB_STG_PORT ? Number(process.env.DB_STG_PORT) : 5432,
     dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, 
+        ca: fs.readFileSync(__dirname + '/../../ca-certificate.crt').toString(),
+      }
+    }
   },
   test: {
     ...defaultDBconfig, // REPLACE THE DEFAULT IF NEEDED

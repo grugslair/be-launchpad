@@ -13,8 +13,9 @@ const SQL = new Sequelize(
 // IMPORT MODELS
 import { Project, ProjectAttributes } from './project';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
+import { WalletBinding } from './walletBinding';
 
-const models = { Project, VestingRule };
+const models = { Project, VestingRule, WalletBinding };
 
 Object.values(models).map((model) => model.initModel(SQL));
 
