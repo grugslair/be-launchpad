@@ -5,11 +5,16 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { userRouter } from "./routes/api.router";
 import { walletBindingRouter } from "./routes/walletBinding.router";
+import { DB } from "./database/models";
 import localConfig from "./config/config";
 
 require("dotenv").config();
 
 const app: express.Application = express();
+
+DB.Sequelize.authenticate()
+  .then(() => console.log('Connection has been established successfully.'))
+  .catch(err => console.error('Unable to connect to the database:', err));
 
 app.use(morgan("combined"));
 app.use(bodyParser.json({ type: "application/json" }));

@@ -9,24 +9,29 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      ethereumAddress: {
+      ethereum_address: { // Updated to snake_case
         type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
-      starkNetAddress: {
+      stark_net_address: { // Updated to snake_case
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
-      createdAt: {
+      whitelist_amount: { // Updated to snake_case
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+      },
+      created_at: { // Reflects automatic conversion
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updatedAt: {
+      updated_at: { // Reflects automatic conversion
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
   },

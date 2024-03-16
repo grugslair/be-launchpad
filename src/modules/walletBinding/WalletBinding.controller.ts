@@ -6,11 +6,45 @@ class WalletBindingController {
         // Ensuring 'this' is correctly bound in the methods used as Express middleware
         this.registerBinding = this.registerBinding.bind(this);
         this.checkBinding = this.checkBinding.bind(this);
+        this.checkWhitelist = this.checkWhitelist.bind(this);
     }
 
-    private async isWhitelisted(ethereumAddress: string): Promise<boolean> {
-        // Implement actual whitelist checking logic here
-        return true; // Placeholder implementation
+    public async checkWhitelist(req: Request, res: Response): Promise<Response> {
+        const { ethereumAddress } = req.params;
+    
+        // Log the incoming Ethereum address to verify it's correctly received
+        console.log("Checking whitelist status for Ethereum address:", ethereumAddress);
+    
+        try {
+            console.log('WalletBinding model:', WalletBinding); // This logs the model to ensure it's imported correctly
+            const whitelistEntry = await WalletBinding.findOne({
+                where: { ethereumAddress },
+                attributes: ['whitelistAmount'] // Adjust if your actual database column name uses a different case or format
+            });
+    
+            // Log the result of the query to see what was found
+            console.log("Whitelist entry found:", whitelistEntry);
+    
+            if (whitelistEntry) {
+                // Log to confirm the branch and data
+                console.log("Whitelist amount for the address:", whitelistEntry.whitelistAmount);
+    
+                return res.status(200).json({ 
+                    isWhitelisted: true, 
+                    whitelistAmount: whitelistEntry.whitelistAmount 
+                });
+            } else {
+                // Log to confirm that no entry was found for the provided address
+                console.log("No whitelist entry found for the address.");
+    
+                return res.status(200).json({ isWhitelisted: false, whitelistAmount: 0 });
+            }
+        } catch (error) {
+            // Log the error to help diagnose the issue
+            console.error("Error checking whitelist status:", error);
+    
+            return res.status(500).json({ message: "Error checking whitelist status." });
+        }
     }
 
     private async isAlreadyBound(ethereumAddress: string): Promise<boolean> {
@@ -21,25 +55,22 @@ class WalletBindingController {
     public async registerBinding(req: Request, res: Response): Promise<Response> {
         const { ethereumAddress, starkNetAddress } = req.body;
 
-        if (!ethereumAddress || !starkNetAddress) {
-            return res.status(400).json({ message: "Ethereum and StarkNet addresses are required." });
+        if (!ethereumAddress) {
+            return res.status(400).json({ message: "Ethereum address is required." });
         }
 
-        try {
-            if (!await this.isWhitelisted(ethereumAddress)) {
-                return res.status(400).json({ message: "Ethereum address is not whitelisted." });
-            }
-
-            if (await this.isAlreadyBound(ethereumAddress)) {
-                return res.status(400).json({ message: "Ethereum address is already bound to a StarkNet wallet." });
-            }
-
-            const newBinding = await WalletBinding.create({ ethereumAddress, starkNetAddress });
-            return res.status(201).json({ message: "Binding successfully created.", binding: newBinding });
-        } catch (error) {
-            console.error("Error registering wallet binding:", error);
-            return res.status(500).json({ message: "Error registering wallet binding." });
+        // Perform the whitelist check directly here
+        const whitelistEntry = await WalletBinding.findOne({ where: { ethereumAddress } });
+        if (!whitelistEntry) {
+            return res.status(400).json({ message: "Ethereum address is not whitelisted." });
         }
+
+        if (await WalletBinding.findOne({ where: { ethereumAddress } })) {
+            return res.status(400).json({ message: "Ethereum address is already bound to a StarkNet wallet." });
+        }
+
+        const newBinding = await WalletBinding.create({ ethereumAddress, starkNetAddress: starkNetAddress || null });
+        return res.status(201).json({ message: "Binding successfully created.", binding: newBinding });
     }
 
     public async checkBinding(req: Request, res: Response): Promise<Response> {
@@ -63,4 +94,4 @@ class WalletBindingController {
 const walletBindingController = new WalletBindingController();
 
 // Export the instance methods directly
-export const { registerBinding, checkBinding } = walletBindingController;
+export const { registerBinding, checkBinding, checkWhitelist } = walletBindingController;

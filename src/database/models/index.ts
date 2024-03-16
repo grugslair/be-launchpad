@@ -10,6 +10,11 @@ const SQL = new Sequelize(
   dbConfig
 );
 
+// Try to authenticate with the database
+SQL.authenticate()
+  .then(() => console.log('Connection has been established successfully.'))
+  .catch(err => console.error('Unable to connect to the database:', err));
+
 // IMPORT MODELS
 import { Project, ProjectAttributes } from './project';
 import { VestingRule, VestingRuleAttributes } from './vestingRule';
@@ -17,9 +22,17 @@ import { WalletBinding } from './walletBinding';
 
 const models = { Project, VestingRule, WalletBinding };
 
-Object.values(models).map((model) => model.initModel(SQL));
+Object.values(models).forEach((model) => {
+  model.initModel(SQL);
+  console.log(`Model ${model.name} initialized successfully.`);
+});
 
-Object.values(models).map((model) => model.associateModel());
+Object.values(models).forEach((model) => {
+  if (model.associateModel) {
+    model.associateModel();
+    console.log(`Associations for model ${model.name} set up successfully.`);
+  }
+});
 
 const DB = { Sequelize: SQL, ...models };
 
