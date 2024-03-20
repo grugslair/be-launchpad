@@ -1,5 +1,5 @@
 'use strict';
-const tableName = 'vesting_rules';
+const tableName = 'chains';
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -10,16 +10,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      label: { type: Sequelize.STRING },
-      tge_percentage: { type: Sequelize.INTEGER },
-      type: { type: Sequelize.STRING }, // Daily or Monthly
-      period_percentage: { type: Sequelize.INTEGER },
-      cliff_period: { type: Sequelize.INTEGER },
+      network_id: { type: Sequelize.STRING },
+      rpc_url: { type: Sequelize.STRING },
+      name: { type: Sequelize.STRING },
+      logo: { type: Sequelize.STRING },
+      color: { type: Sequelize.STRING },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE,
-      },
-      deleted_at: {
         type: Sequelize.DATE,
       },
       updated_at: {

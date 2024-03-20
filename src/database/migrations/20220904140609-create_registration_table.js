@@ -1,5 +1,5 @@
 'use strict';
-const tableName = 'vesting_rules';
+const tableName = 'registrations';
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -10,20 +10,30 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      label: { type: Sequelize.STRING },
-      tge_percentage: { type: Sequelize.INTEGER },
-      type: { type: Sequelize.STRING }, // Daily or Monthly
-      period_percentage: { type: Sequelize.INTEGER },
-      cliff_period: { type: Sequelize.INTEGER },
+      project_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'projects',
+            schema: 'public',
+          },
+          key: 'id',
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
+        },
+      },
+      wallet_address: { type: Sequelize.STRING },
+      amount: { type: Sequelize.INTEGER },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      deleted_at: {
-        type: Sequelize.DATE,
-      },
       updated_at: {
         allowNull: false,
+        type: Sequelize.DATE,
+      },
+      deleted_at: {
         type: Sequelize.DATE,
       },
     });

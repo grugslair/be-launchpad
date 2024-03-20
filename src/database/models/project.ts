@@ -1,55 +1,76 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
+import { Commit } from './commit';
+import { Currency, CurrencyAttributes } from './currency';
+import { ProjectVesting } from './projectVesting';
+import { ProjectCommit } from './projectCommit';
+import { Registration } from './registration';
+import { VestingRule } from './vestingRule';
+import { ProjectToCurrency, ProjectToCurrencyAttributes } from './projectToCurrency';
+import { Chain } from './chain';
 
 export interface ProjectAttributes {
-  id: Number
-  chainId: Number
-  vestingRuleId: Number
-  name: String
-  tokenContractAddress: String
-  tokenSymbol: String
-  tokenDecimals: Number
-  tokenInitialSupply: Number
-  description: String
-  status: String
-  banner: String
-  logo: String
-  targetAmount: Number
-  publicSaleTokenAmount: Number
-  publicSaleTokenSold: Number
-  publicSalePrice: Number
-  minInvestment: Number
-  periodStart: Date
-  periodEnd: Date
-  discordUrl: String
-  twitterUrl: String
-  mediumUrl: String
-  officialUrl: String
+  id: number
+  chainId: number
+  vestingRuleId: number
+  name: string
+  tokenContractAddress: string
+  tokenSymbol: string
+  tokenDecimals: number
+  tokenInitialSupply: string
+  tokenTotalSupply: string
+  description: string
+  status: string
+  banner: string
+  logo: string
+  targetAmount: number
+  publicSaleTokenAmount: string
+  publicSaleTokenSold: string
+  publicSalePrice: string
+  publicSaleCurrencySymbol: string
+  maxAllocation: number
+  minStaking: number
+  registrationPeriodStart: Date
+  registrationPeriodEnd: Date
+  buyPeriodStart: Date
+  buyPeriodEnd: Date
+  claimPeriodStart: Date
+  discordUrl: string
+  twitterUrl: string
+  mediumUrl: string
+  officialUrl: string
 }
 
 export class Project extends Model implements ProjectAttributes {
-  public id!: Number;
-  public chainId!: Number;
-  public vestingRuleId!: Number;
-  public name!: String;
-  public tokenContractAddress!: String;
-  public tokenSymbol!: String;
-  public tokenDecimals!: Number;
-  public tokenInitialSupply!: Number;
-  public description!: String;
-  public status!: String;
-  public banner!: String;
-  public logo!: String;
-  public targetAmount!: Number;
-  public publicSaleTokenAmount!: Number;
-  public publicSaleTokenSold!: Number;
-  public publicSalePrice!: Number;
-  public minInvestment!: Number;
-  public periodStart!: Date;
-  public periodEnd!: Date;
-  public discordUrl!: String;
-  public twitterUrl!: String;
-  public mediumUrl!: String;
-  public officialUrl!: String;
+  public id!: number;
+  public chainId!: number;
+  public vestingRuleId!: number;
+  public name!: string;
+  public tokenContractAddress!: string;
+  public tokenSymbol!: string;
+  public tokenDecimals!: number;
+  public tokenInitialSupply!: string;
+  public tokenTotalSupply!: string;
+  public description!: string;
+  public status!: string;
+  public banner!: string;
+  public logo!: string;
+  public targetAmount!: number;
+  public publicSaleTokenAmount!: string;
+  public publicSaleTokenSold!: string;
+  public publicSalePrice!: string;
+  public publicSaleCurrencySymbol!: string;
+  public minStaking!: number;
+  public maxAllocation!: number;
+  public registrationPeriodStart!: Date;
+  public registrationPeriodEnd!: Date;
+  public buyPeriodStart!: Date;
+  public buyPeriodEnd!: Date;
+  public claimPeriodStart!: Date;
+  public discordUrl!: string;
+  public twitterUrl!: string;
+  public mediumUrl!: string;
+  public officialUrl!: string;
+  public Currencies?: CurrencyAttributes[];
 
   static initModel(sequelize: Sequelize): void {
     Project.init({
@@ -65,18 +86,24 @@ export class Project extends Model implements ProjectAttributes {
       tokenContractAddress: { type: DataTypes.STRING },
       tokenSymbol: { type: DataTypes.STRING },
       tokenDecimals: { type: DataTypes.INTEGER },
-      tokenInitialSupply: { type: DataTypes.INTEGER },
+      tokenInitialSupply: { type: DataTypes.STRING },
+      tokenTotalSupply: { type: DataTypes.STRING }, 
       description: { type: DataTypes.TEXT },
       status: { type: DataTypes.STRING },
       banner: { type: DataTypes.STRING },
       logo: { type: DataTypes.STRING },
-      targetAmount: { type: DataTypes.INTEGER },
-      publicSaleTokenAmount: { type: DataTypes.FLOAT },
-      publicSaleTokenSold: { type: DataTypes.FLOAT },
-      publicSalePrice: { type: DataTypes.FLOAT },
-      minInvestment: { type: DataTypes.FLOAT },
-      periodStart: { type: DataTypes.DATE },
-      periodEnd: { type: DataTypes.DATE },
+      targetAmount: { type: DataTypes.STRING },
+      publicSaleTokenAmount: { type: DataTypes.STRING },
+      publicSaleTokenSold: { type: DataTypes.STRING },
+      publicSalePrice: { type: DataTypes.STRING },
+      publicSaleCurrencySymbol: { type: DataTypes.STRING },
+      minStaking: { type: DataTypes.FLOAT },
+      maxAllocation: { type: DataTypes.FLOAT },
+      registrationPeriodStart: { type: DataTypes.DATE },
+      registrationPeriodEnd: { type: DataTypes.DATE },
+      buyPeriodStart: { type: DataTypes.DATE },
+      buyPeriodEnd: { type: DataTypes.DATE },
+      claimPeriodStart: { type: DataTypes.DATE },
       discordUrl: { type: DataTypes.STRING },
       twitterUrl: { type: DataTypes.STRING },
       mediumUrl: { type: DataTypes.STRING },
@@ -91,6 +118,21 @@ export class Project extends Model implements ProjectAttributes {
 
   static associateModel(): void {
     // set assoc here
+    Project.belongsToMany(Currency, {
+      through: {
+        model: ProjectToCurrency,
+        unique: false
+      },
+      foreignKey: 'projectId',
+      constraints: false,
+    });
+    Project.belongsTo(Chain, { foreignKey: 'chainId' });
+    Project.belongsTo(VestingRule, { foreignKey: 'vestingRuleId' });
+    Project.hasOne(ProjectVesting, { foreignKey: 'projectId' });
+    Project.hasMany(Registration, { foreignKey: 'projectId' });
+    Project.hasMany(Commit, { foreignKey: 'projectId' });
+    Project.hasMany(ProjectCommit, { foreignKey: 'projectId' });
+    Project.hasMany(ProjectToCurrency, { foreignKey: 'projectId' });
   }
 }
 

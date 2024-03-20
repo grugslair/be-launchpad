@@ -31,6 +31,7 @@ module.exports = {
       token_symbol: { type: Sequelize.STRING },
       token_decimals: { type: Sequelize.INTEGER },
       token_initial_supply: { type: Sequelize.INTEGER },
+      token_total_supply: { type: Sequelize.INTEGER },
       description: { type: Sequelize.TEXT },
       status: { type: Sequelize.STRING },
       banner: { type: Sequelize.STRING },
@@ -39,7 +40,20 @@ module.exports = {
       public_sale_token_amount: { type: Sequelize.FLOAT },
       public_sale_token_sold: { type: Sequelize.FLOAT },
       public_sale_price: { type: Sequelize.FLOAT },
-      min_investment: { type: Sequelize.FLOAT },
+      public_sale_currency_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'currencies',
+            schema: 'public',
+          },
+          key: 'id',
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
+        },
+      },
+      min_staking: { type: Sequelize.FLOAT },
       period_start: { type: Sequelize.DATE },
       period_end: { type: Sequelize.DATE },
       discord_url: { type: Sequelize.STRING },
@@ -52,6 +66,9 @@ module.exports = {
       },
       updated_at: {
         allowNull: false,
+        type: Sequelize.DATE,
+      },
+      deleted_at: {
         type: Sequelize.DATE,
       },
     });

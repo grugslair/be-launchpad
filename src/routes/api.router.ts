@@ -1,12 +1,16 @@
 import express from "express";
 import { Router, Request, Response, NextFunction } from "express";
 import { AuthController } from "../modules/auth/Auth.controller";
+import { ProjectController } from "../modules/project/Project.controller";
+import { ReportController } from "../modules/report/Report.controller";
 
 const userRouter: Router = express.Router();
 // Can define more router if needed
 
 // Controller initialization
-const AuthControllerObj = new AuthController();
+const authController = new AuthController();
+const projectController = new ProjectController();
+const reportController = new ReportController();
 
 const wrap = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,7 +21,7 @@ const wrap = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-userRouter.get("/ping", wrap(AuthControllerObj.test))
+userRouter.get("/ping", wrap(authController.test))
 
 /* --- Authentication Route --- */
 /**
@@ -26,5 +30,16 @@ userRouter.get("/ping", wrap(AuthControllerObj.test))
  */
 // userRouter.post("/auth/login", wrap(AuthControllerObj.login))
 
+const apiRouter = express.Router();
 
-export { userRouter };
+apiRouter.get('/projects', wrap(projectController.getActiveProjects));
+apiRouter.get('/projects/:projectId', wrap(projectController.getProjectById));
+apiRouter.post('/projects/register', wrap(projectController.registerForProject));
+apiRouter.post('/projects/invest', wrap(projectController.investForProject));
+apiRouter.post('/projects/signature', wrap(projectController.generateSignature));
+
+
+apiRouter.get('/reports', wrap(reportController.getAllReports));
+
+
+export { userRouter, apiRouter };
