@@ -3,6 +3,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { AuthController } from "../modules/auth/Auth.controller";
 import { ProjectController } from "../modules/project/Project.controller";
 import { ReportController } from "../modules/report/Report.controller";
+import { WalletBindingController } from "../modules/walletBinding/WalletBinding.controller";
 
 const userRouter: Router = express.Router();
 // Can define more router if needed
@@ -11,6 +12,7 @@ const userRouter: Router = express.Router();
 const authController = new AuthController();
 const projectController = new ProjectController();
 const reportController = new ReportController();
+const walletController = new WalletBindingController();
 
 const wrap = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -38,8 +40,11 @@ apiRouter.post('/projects/register', wrap(projectController.registerForProject))
 apiRouter.post('/projects/invest', wrap(projectController.investForProject));
 apiRouter.post('/projects/signature', wrap(projectController.generateSignature));
 
-
 apiRouter.get('/reports', wrap(reportController.getAllReports));
 
+apiRouter.get('/wallet/whitelist', wrap(walletController.checkWhitelist));
+apiRouter.get('/wallet/binding', wrap(walletController.checkBinding));
+apiRouter.put('/wallet/binding', wrap(walletController.binding));
+apiRouter.put('/wallet/unbinding', wrap(walletController.unbinding));
 
 export { userRouter, apiRouter };

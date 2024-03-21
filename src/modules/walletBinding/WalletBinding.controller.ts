@@ -3,85 +3,111 @@ import { WalletBinding } from '../../database/models/walletBinding'; // Adjust t
 
 class WalletBindingController {
     constructor() {
-        // Ensuring 'this' is correctly bound in the methods used as Express middleware
-        this.registerBinding = this.registerBinding.bind(this);
+        this.binding = this.binding.bind(this);
         this.checkBinding = this.checkBinding.bind(this);
         this.checkWhitelist = this.checkWhitelist.bind(this);
+        this.unbinding = this.unbinding.bind(this);
     }
 
     public async checkWhitelist(req: Request, res: Response): Promise<Response> {
-        const { ethereumAddress } = req.params;
+        const { ethereumAddress } = req.query;
+
+        if (!ethereumAddress) {
+            return res.status(400).json({ message: "Ethereum address is required." });
+        }
     
-        // Log the incoming Ethereum address to verify it's correctly received
         console.log("Checking whitelist status for Ethereum address:", ethereumAddress);
     
         try {
-            console.log('WalletBinding model:', WalletBinding); // This logs the model to ensure it's imported correctly
             const whitelistEntry = await WalletBinding.findOne({
                 where: { ethereumAddress },
-                attributes: ['whitelistAmount'] // Adjust if your actual database column name uses a different case or format
+                attributes: ['whitelistAmount']
             });
+
+            const { whitelistAmount = 0 } = whitelistEntry || {};
     
-            // Log the result of the query to see what was found
-            console.log("Whitelist entry found:", whitelistEntry);
-    
-            if (whitelistEntry) {
-                // Log to confirm the branch and data
-                console.log("Whitelist amount for the address:", whitelistEntry.whitelistAmount);
-    
-                return res.status(200).json({ 
-                    isWhitelisted: true, 
-                    whitelistAmount: whitelistEntry.whitelistAmount 
-                });
-            } else {
-                // Log to confirm that no entry was found for the provided address
-                console.log("No whitelist entry found for the address.");
-    
-                return res.status(200).json({ isWhitelisted: false, whitelistAmount: 0 });
-            }
+            return res.status(200).json({ whitelistAmount });
         } catch (error) {
-            // Log the error to help diagnose the issue
             console.error("Error checking whitelist status:", error);
     
             return res.status(500).json({ message: "Error checking whitelist status." });
         }
     }
 
-    private async isAlreadyBound(ethereumAddress: string): Promise<boolean> {
-        const binding = await WalletBinding.findOne({ where: { ethereumAddress } });
-        return !!binding;
-    }
-
-    public async registerBinding(req: Request, res: Response): Promise<Response> {
+    public async binding(req: Request, res: Response): Promise<Response> {
         const { ethereumAddress, starkNetAddress } = req.body;
 
         if (!ethereumAddress) {
             return res.status(400).json({ message: "Ethereum address is required." });
         }
 
-        // Perform the whitelist check directly here
+        if (!starkNetAddress) {
+            return res.status(400).json({ message: "Starknet address is required." });
+        }
+
         const whitelistEntry = await WalletBinding.findOne({ where: { ethereumAddress } });
+
         if (!whitelistEntry) {
             return res.status(400).json({ message: "Ethereum address is not whitelisted." });
         }
 
-        if (await WalletBinding.findOne({ where: { ethereumAddress } })) {
-            return res.status(400).json({ message: "Ethereum address is already bound to a StarkNet wallet." });
+        if (whitelistEntry.starkNetAddress) {
+            return res.status(422).json({ message: "Ethereum address is already bound to a StarkNet wallet." });
         }
 
-        const newBinding = await WalletBinding.create({ ethereumAddress, starkNetAddress: starkNetAddress || null });
-        return res.status(201).json({ message: "Binding successfully created.", binding: newBinding });
+        await whitelistEntry.update({ starkNetAddress });
+
+        return res.status(200).json({ message: "Successfully binding" });
+    }
+
+    public async unbinding(req: Request, res: Response): Promise<Response> {
+        const { ethereumAddress } = req.body;
+
+        if (!ethereumAddress) {
+            return res.status(400).json({ message: "Ethereum address is required." });
+        }
+
+        const whitelistEntry = await WalletBinding.findOne({ where: { ethereumAddress } });
+
+        if (!whitelistEntry) {
+            return res.status(400).json({ message: "Ethereum address is not whitelisted." });
+        }
+
+        if (!whitelistEntry.starkNetAddress) {
+            return res.status(422).json({ message: "Ethereum address is not connected to any StarkNet wallet." });
+        }
+
+        await whitelistEntry.update({ starkNetAddress: null });
+
+        return res.status(200).json({ message: "Succesfully unbinding" });
     }
 
     public async checkBinding(req: Request, res: Response): Promise<Response> {
-        const { ethereumAddress } = req.params;
+        const { ethereumAddress, starkNetAddress } = req.query;
+
+        if (!ethereumAddress) {
+            return res.status(400).json({ message: "Ethereum address is required." });
+        }
+
+        if (!starkNetAddress) {
+            return res.status(400).json({ message: "StarkNet address is required." });
+        }
 
         try {
             const binding = await WalletBinding.findOne({ where: { ethereumAddress } });
-            if (binding) {
-                return res.status(200).json({ isBound: true, starkNetAddress: binding.starkNetAddress });
+
+            if (!binding) {
+                return res.status(400).json({ message: "Ethereum address is invalid" });
+            }
+
+            if (binding.starkNetAddress) {
+                if (binding.starkNetAddress === starkNetAddress) {
+                    return res.status(200).json({ status: 'connected' });
+                } else {
+                    return res.status(200).json({ status: 'connected_to_other' })
+                }
             } else {
-                return res.status(200).json({ isBound: false });
+                return res.status(200).json({ status: 'not_connected' })
             }
         } catch (error) {
             console.error("Error checking wallet binding:", error);
@@ -90,8 +116,4 @@ class WalletBindingController {
     }
 }
 
-// Create a single instance of the controller
-const walletBindingController = new WalletBindingController();
-
-// Export the instance methods directly
-export const { registerBinding, checkBinding, checkWhitelist } = walletBindingController;
+export { WalletBindingController };

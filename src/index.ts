@@ -3,9 +3,6 @@ import { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { walletBindingRouter } from "./routes/walletBinding.router";
-import { DB } from "./database/models";
-import localConfig from "./config/config";
 import { userRouter, apiRouter } from "./routes/api.router";
 import { RedisClient } from "./utils/redis";
 
@@ -29,7 +26,6 @@ app.use(cors());
 
 app.use("/api", apiRouter);
 app.use("/api", userRouter);
-app.use('/api', walletBindingRouter);
 
 app.get('/:number', (req: Request, res: Response) => {
   const { number } = req.params;
