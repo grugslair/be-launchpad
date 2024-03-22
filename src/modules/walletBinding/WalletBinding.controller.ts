@@ -10,11 +10,11 @@ class WalletBindingController {
     }
 
     public async checkWhitelist(req: Request, res: Response): Promise<Response> {
-        const { ethereumAddress } = req.query;
-
-        if (!ethereumAddress) {
+        if (!req.query.ethereumAddress) {
             return res.status(400).json({ message: "Ethereum address is required." });
         }
+
+        const ethereumAddress = `${req.query.ethereumAddress}`.toLowerCase();
     
         console.log("Checking whitelist status for Ethereum address:", ethereumAddress);
     
@@ -35,15 +35,16 @@ class WalletBindingController {
     }
 
     public async binding(req: Request, res: Response): Promise<Response> {
-        const { ethereumAddress, starkNetAddress } = req.body;
-
-        if (!ethereumAddress) {
+        if (!req.body.ethereumAddress) {
             return res.status(400).json({ message: "Ethereum address is required." });
         }
 
-        if (!starkNetAddress) {
+        if (!req.body.starkNetAddress) {
             return res.status(400).json({ message: "Starknet address is required." });
         }
+
+        const ethereumAddress = `${req.body.ethereumAddress}`.toLowerCase();
+        const starkNetAddress = `${req.body.starkNetAddress}`.toLowerCase();
 
         const whitelistEntry = await WalletBinding.findOne({ where: { ethereumAddress } });
 
@@ -61,11 +62,11 @@ class WalletBindingController {
     }
 
     public async unbinding(req: Request, res: Response): Promise<Response> {
-        const { ethereumAddress } = req.body;
-
-        if (!ethereumAddress) {
+        if (!req.body.ethereumAddress) {
             return res.status(400).json({ message: "Ethereum address is required." });
         }
+
+        const ethereumAddress = `${req.body.ethereumAddress}`.toLowerCase();
 
         const whitelistEntry = await WalletBinding.findOne({ where: { ethereumAddress } });
 
@@ -83,15 +84,16 @@ class WalletBindingController {
     }
 
     public async checkBinding(req: Request, res: Response): Promise<Response> {
-        const { ethereumAddress, starkNetAddress } = req.query;
-
-        if (!ethereumAddress) {
+        if (!req.query.ethereumAddress) {
             return res.status(400).json({ message: "Ethereum address is required." });
         }
 
-        if (!starkNetAddress) {
+        if (!req.query.starkNetAddress) {
             return res.status(400).json({ message: "StarkNet address is required." });
         }
+
+        const ethereumAddress = `${req.query.ethereumAddress}`.toLowerCase();
+        const starkNetAddress = `${req.query.starkNetAddress}`.toLowerCase();
 
         try {
             const binding = await WalletBinding.findOne({ where: { ethereumAddress } });
